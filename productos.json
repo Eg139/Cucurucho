@@ -1,8 +1,0 @@
-[
-  { "id": "cuarto", "nombre": "1/4 KG", "precio": 4500 },
-  { "id": "medio", "nombre": "1/2 KG", "precio": 8000 },
-  { "id": "kilo", "nombre": "1 KG", "precio": 14500 },
-  { "id": "vasito", "nombre": "Vasito", "precio": 3000 },
-  { "id": "cucurucho1", "nombre": "Cucurucho 1 bocha", "precio": 3500 },
-  { "id": "cucurucho2", "nombre": "Cucurucho 2 bochas", "precio": 5000 }
-]

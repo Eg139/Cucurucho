@@ -4,66 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CUCURUCHO">
 <meta name="theme-color" content="#0a0a0a">
-<title>Heladería - Sistema de Ventas</title>
+<meta name="description" content="CUCURUCHO - Sistema de ventas heladería by NaluSoft">
+<title>CUCURUCHO - by NaluSoft</title>
 <link rel="manifest" href="manifest.json">
-<style>
- :root{ --negro:#0a0a0a; --naranja:#e9a23b; --naranja-soft:#2a2113; }
- body{font-family:system-ui, -apple-system;background:var(--negro);color:#fff;margin:0;padding:20px;max-width:480px;margin:auto}
- input,button,select{width:100%;padding:16px;border-radius:14px;border:1.5px solid transparent;margin-top:12px;font-size:16px;box-sizing:border-box}
- input,select{background:#161616;color:#fff;border-color:#2a2a2a} input:focus,select:focus{outline:none;border-color:var(--naranja)}
- button{background:var(--naranja);color:#000;font-weight:900;letter-spacing:.5px}
-.card{background:#161616;border:1px solid #232323;padding:14px;border-radius:14px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
-.card b{color:var(--naranja)}
- #bienvenida{height:92vh;display:flex;flex-direction:column;justify-content:center;text-align:center}
-.logo{width:110px;height:110px;border-radius:50%;border:3px solid var(--naranja);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:50px;background:#000}
-.linea{height:2px;background:var(--naranja);width:80px;margin:12px auto;opacity:.8}
-.prod-btn{white-space:pre-line;height:78px;font-size:13px;font-weight:800;background:#161616;color:#fff;border:1.5px solid #2a2a2a}
-.prod-btn.active{border-color:var(--naranja);background:var(--naranja-soft);color:var(--naranja)}
-.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-top:10px;background:#161616;border:1px solid #232323;border-radius:14px;padding:12px 14px}
-.brand-sub{font-size:18px;font-weight:900;letter-spacing:1px;color:var(--naranja);text-transform:uppercase;line-height:1.1}
-.btn-salir{display:flex;align-items:center;gap:6px;background:#1c1c1c;border:1px solid #2a2a2a;color:#888;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.5px;width:auto;margin:0}
-.btn-salir:active{border-color:var(--naranja);color:var(--naranja);background:var(--naranja-soft)}
-.carrito-item{display:flex;justify-content:space-between;align-items:center;background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;margin-top:8px}
-.qty{display:flex;align-items:center;gap:8px}
-.qty button{width:34px;height:34px;padding:0;margin:0;border-radius:9px;background:#222;color:#fff;border:1px solid #333;font-size:18px;line-height:1}
-.qty button.plus{background:var(--naranja);color:#000;border-color:var(--naranja);font-weight:900}
-</style>
+<link rel="apple-touch-icon" href="nalusoft.jpg">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="bienvenida">
   <div class="logo">🍦</div>
-  <h1 style="margin:0;letter-spacing:2px;font-weight:900" id="tituloBienvenida">TU HELADERÍA</h1>
+  <h1 id="tituloBienvenida">TU HELADERÍA</h1>
   <div class="linea"></div>
-  <p style="margin:0;opacity:.7;letter-spacing:1px;font-size:13px" id="subBienvenida">Sistema de Ventas</p>
+  <p id="subBienvenida">Sistema de Ventas</p>
 
   <div id="paso1">
     <p style="opacity:.6;margin-top:30px">¿Cómo se llama tu negocio?</p>
     <input id="negocioInput" placeholder="Ej: Chocorlatte, Grido, etc">
     <button onclick="guardarNegocio()">SIGUIENTE</button>
   </div>
-
   <div id="paso2" style="display:none">
     <p style="opacity:.6;margin-top:30px">Ahora tu nombre para el turno</p>
     <input id="nombreInput" placeholder="Ej: Tomas">
-    <button onclick="guardarNombre()">ENTRAR</button>
+    <button onclick="guardarNombre()">SIGUIENTE</button>
     <span onclick="cambiarNegocio()" style="display:block;margin-top:16px;font-size:12px;color:#666;text-decoration:underline">cambiar nombre del negocio</span>
   </div>
-  <div style="margin-top:30px;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.3">
-    <img src="nalusoft.png" onerror="this.style.display='none'" style="width:18px;height:18px;border-radius:4px">
-    <span style="font-size:10px;letter-spacing:1.5px">by NaluSoft</span>
+  <div id="paso3" style="display:none;text-align:left">
+    <p style="opacity:.6;margin-top:30px;text-align:center">Configurá tus precios</p>
+    <div id="listaPreciosConfig"></div>
+    <button onclick="guardarPrecios()" style="margin-top:20px">GUARDAR PRECIOS Y ENTRAR</button>
   </div>
 </div>
 
 <div id="app" style="display:none">
   <div class="topbar">
-    <div>
-      <div class="brand-sub" id="brandTop">TU HELADERÍA</div>
-      <div id="saludo" style="margin:4px 0 0 0;font-size:12px;opacity:.5;letter-spacing:.5px"></div>
-    </div>
+    <div><div class="brand-sub" id="brandTop"></div><div id="saludo"></div></div>
     <button class="btn-salir" onclick="cambiarUsuario()">↪ Salir</button>
-  </div>
   </div>
 
   <div style="margin-top:22px">
@@ -71,74 +50,54 @@
     <div id="botones" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
   </div>
 
-  <select id="sabor" style="margin-top:10px"><option value="">Sabor para el próximo producto (opcional)</option></select>
-
   <div id="carrito" style="margin-top:16px;display:none">
     <div style="font-size:11px;opacity:.5;letter-spacing:1px;margin-bottom:6px">CARRITO</div>
     <div id="carritoLista"></div>
     <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px dashed #333">
-      <span style="opacity:.6">Total pedido</span>
-      <b id="carritoTotal" style="color:var(--naranja);font-size:20px">$0</b>
+      <span style="opacity:.6">Total pedido</span><b id="carritoTotal"></b>
     </div>
   </div>
 
-  <button onclick="agregar()" id="btnVender" style="margin-top:14px;display:none">COBRAR Y REGISTRAR</button>
-  <button onclick="vaciarCarrito()" id="btnVaciar" style="background:transparent;color:#666;border:1px solid #2a2a2a;margin-top:8px;display:none;font-size:13px">VACIAR CARRITO</button>
+  <div id="bloqueCobro" style="display:none">
+    <div class="pay-grid">
+      <button class="pay-btn pay-efectivo" onclick="cobrar('EFECTIVO')">🟢 EFECTIVO</button>
+      <button class="pay-btn pay-mp" onclick="cobrar('MP')">🔵 MERCADO PAGO</button>
+      <button class="pay-btn pay-trans" onclick="cobrar('TRANSFER')">TRANSFER.</button>
+      <button class="pay-btn pay-py" id="btnPY"></button>
+    </div>
+    <div id="previewPY" style="display:none;margin-top:10px;background:#2a1a1a;border:1px solid #dc2626;border-radius:12px;padding:10px;text-align:center;font-size:13px"></div>
+    <button onclick="vaciarCarrito()" style="background:transparent;color:#666;border:1px solid #2a2a2a;margin-top:8px;font-size:13px">VACIAR CARRITO</button>
+  </div>
 
   <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div style="background:#161616;border:1px solid #2a2a2a;border-radius:14px;padding:14px">
-      <div style="font-size:10px;opacity:.5;letter-spacing:1px">HOY</div>
-      <div id="totalHoy" style="font-size:22px;font-weight:900;color:#e9a23b">$0</div>
-      <div id="cantHoy" style="font-size:11px;opacity:.5"></div>
+      <div style="font-size:10px;opacity:.5;letter-spacing:1px">HOY (turno actual)</div><div id="totalHoy"></div><div id="cantHoy"></div>
     </div>
     <div style="background:#2a2113;border:1px solid #e9a23b;border-radius:14px;padding:14px">
-      <div style="font-size:10px;opacity:.6;letter-spacing:1px">MES (1 al hoy)</div>
-      <div id="totalMes" style="font-size:22px;font-weight:900;color:#e9a23b">$0</div>
-      <div id="cantMes" style="font-size:11px;opacity:.6"></div>
+      <div style="font-size:10px;opacity:.6;letter-spacing:1px">MES (1 al hoy)</div><div id="totalMes"></div><div id="cantMes"></div>
     </div>
   </div>
   <div id="info" style="opacity:.5;font-size:11px;margin-top:10px;text-align:center"></div>
-  <div id="lista" style="margin-top:16px"></div>
+
+  <button onclick="cerrarTurno()" style="background:#e9a23b;color:#000;margin-top:16px;border:2px solid #e9a23b">🔒 CERRAR TURNO ACTUAL</button>
+  <button onclick="verCierres()" style="background:transparent;color:#888;border:1px solid #2a2a2a;margin-top:8px;font-size:12px">VER HISTORIAL DE CIERRES</button>
+
+  <div class="detalle-ventas">
+    <div class="detalle-head" onclick="toggleVentas()"><b id="tituloVentas">VENTAS DEL DÍA</b><span id="btnToggleVentas">▼ Ver ventas</span></div>
+    <div class="detalle-body" id="contenedorLista"><div id="lista"></div></div>
+  </div>
 
   <button onclick="exportarDiario()" style="background:#fff;color:#000;margin-top:32px">EXPORTAR VENTA DIARIA</button>
   <button onclick="exportarMes()" style="background:transparent;color:#fff;border:1.5px solid #2a2a2a;margin-top:10px">EXPORTAR TODO EL MES (1 al hoy)</button>
+</div>
 
-  <!-- BANNER NALUSOFT -->
-  <div style="text-align:center;margin-top:40px;padding:24px 0 12px 0;border-top:1px solid #1a1a1a">
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;opacity:.9">
-      <img src="nalusoft.png" onerror="this.style.display='none'" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#111">
-      <div style="text-align:left;line-height:1.1">
-        <div style="font-size:10px;letter-spacing:2px;opacity:.4">DESARROLLADO POR</div>
-        <div style="font-size:14px;font-weight:900;letter-spacing:1px;color:#e9a23b">NaluSoft</div>
-      </div>
-    </div>
-    <div style="font-size:10px;opacity:.25;margin-top:8px">Software libre • MIT • v1.0</div>
-    <div style="margin-top:14px"><span onclick="cambiarNegocio()" style="font-size:11px;color:#333;text-decoration:underline;cursor:pointer">cambiar nombre del negocio</span></div>
+<div id="modalCierres" class="modal" onclick="if(event.target===this) cerrarModal()">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b>HISTORIAL DE CIERRES</b><button onclick="cerrarModal()" style="width:auto;padding:6px 12px;background:#222;color:#fff;margin:0">X</button></div>
+    <div id="listaCierres" style="margin-top:12px"></div>
   </div>
 </div>
 
-<script>
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-const PRODUCTOS_DEFAULT = [ { "id": "cuarto", "nombre": "1/4 KG", "precio": 4500 }, { "id": "medio", "nombre": "1/2 KG", "precio": 8000 }, { "id": "kilo", "nombre": "1 KG", "precio": 14500 }, { "id": "vasito", "nombre": "Vasito", "precio": 3000 }, { "id": "cucurucho1", "nombre": "Cucurucho 1 bocha", "precio": 3500 }, { "id": "cucurucho2", "nombre": "Cucurucho 2 bochas", "precio": 5000 } ];
-let productos = PRODUCTOS_DEFAULT; let carrito = []; let ventas = JSON.parse(localStorage.getItem('ventas_mes') || '[]'); const HOY = new Date().toLocaleDateString();
-function getMesAnio(fechaStr){ try{ let parts = fechaStr.split('/'); return {m: parseInt(parts[1]), a: parseInt(parts[2])}; }catch(e){ return {m: new Date().getMonth()+1, a: new Date().getFullYear()}; } }
-function init(){ let negocio = localStorage.getItem('negocio_nombre'); let nombre = localStorage.getItem('vendedor_nombre'); const b = document.getElementById('bienvenida'); const a = document.getElementById('app'); const p1 = document.getElementById('paso1'); const p2 = document.getElementById('paso2'); let tituloDefault = "TU HELADERÍA"; let nombreMostrar = negocio? negocio.toUpperCase() : tituloDefault; document.getElementById('tituloBienvenida').innerText = nombreMostrar; document.getElementById('subBienvenida').innerText = negocio || "Sistema de Ventas"; document.getElementById('brandTop').innerText = nombreMostrar; document.title = negocio? `${nombreMostrar} - Ventas` : "Heladería - Sistema de Ventas"; if(negocio && nombre){ b.style.display='none'; a.style.display='block'; document.getElementById('saludo').innerText=`Turno: ${nombre}`; render(); } else if(negocio &&!nombre){ b.style.display='flex'; a.style.display='none'; p1.style.display='none'; p2.style.display='block'; } else { b.style.display='flex'; a.style.display='none'; p1.style.display='block'; p2.style.display='none'; } renderBotones(); cargarSabores(); }
-function guardarNegocio(){ let n=document.getElementById('negocioInput').value.trim(); if(!n) return; localStorage.setItem('negocio_nombre', n); document.getElementById('nombreInput').focus(); init(); }
-function guardarNombre(){ let n=document.getElementById('nombreInput').value.trim(); if(!n) return; localStorage.setItem('vendedor_nombre', n); init(); }
-function cambiarUsuario(){ if(confirm('¿Cerrar turno?')){ localStorage.removeItem('vendedor_nombre'); location.reload(); } }
-function cambiarNegocio(){ if(confirm('¿Cambiar nombre del negocio? Se cerrará el turno.')){ localStorage.removeItem('negocio_nombre'); localStorage.removeItem('vendedor_nombre'); location.reload(); } }
-function guardar(){ localStorage.setItem('ventas_mes', JSON.stringify(ventas)); render(); }
-function renderBotones(){ const cont=document.getElementById('botones'); if(!cont) return; cont.innerHTML=''; productos.forEach(p=>{ let btn=document.createElement('button'); btn.className='prod-btn'; btn.innerText=`${p.nombre}\n$${p.precio.toLocaleString()}`; btn.onclick=()=>seleccionarProducto(p, btn); cont.appendChild(btn); }); }
-function seleccionarProducto(p, btn){ let sabor = document.getElementById('sabor').value; btn.classList.add('active'); setTimeout(()=>btn.classList.remove('active'),150); let idx = carrito.findIndex(c=>c.id===p.id && c.sabor===sabor); if(idx>=0){ carrito[idx].cant++; } else { carrito.push({id:p.id, nombre:p.nombre, precio:p.precio, sabor: sabor, cant:1}); } document.getElementById('sabor').value=''; renderCarrito(); }
-function renderCarrito(){ const cont = document.getElementById('carrito'); const lista = document.getElementById('carritoLista'); const btnVender = document.getElementById('btnVender'); const btnVaciar = document.getElementById('btnVaciar'); if(carrito.length===0){ cont.style.display='none'; btnVender.style.display='none'; btnVaciar.style.display='none'; return; } cont.style.display='block'; btnVender.style.display='block'; btnVaciar.style.display='block'; lista.innerHTML=''; let total=0; carrito.forEach((item,i)=>{ let sub = item.precio*item.cant; total+=sub; lista.innerHTML+=` <div class="carrito-item"> <div><b>${item.nombre}</b><br><small style="opacity:.5">${item.sabor||'sin sabor'}</small></div> <div class="qty"> <button onclick="cambiarCant(${i},-1)">−</button> <span style="min-width:20px;text-align:center;font-weight:800">${item.cant}</span> <button class="plus" onclick="cambiarCant(${i},1)">+</button> <b style="color:var(--naranja);margin-left:8px;min-width:60px;text-align:right">$${sub.toLocaleString()}</b> </div> </div>`; }); document.getElementById('carritoTotal').innerText='$'+total.toLocaleString(); }
-function cambiarCant(index, delta){ carrito[index].cant+=delta; if(carrito[index].cant<=0) carrito.splice(index,1); renderCarrito(); }
-function vaciarCarrito(){ carrito=[]; renderCarrito(); }
-function agregar(){ if(carrito.length===0){ alert('Carrito vacío'); return; } carrito.forEach(item=>{ for(let k=0;k<item.cant;k++){ ventas.push({ f:HOY, h:new Date().toLocaleTimeString(), p: item.nombre + (item.sabor?' - '+item.sabor:''), v: item.precio, vendedor: localStorage.getItem('vendedor_nombre') }); } }); guardar(); carrito=[]; renderCarrito(); }
-function render(){ const lista=document.getElementById('lista'); lista.innerHTML=''; let {m: mesActual, a: anioActual} = getMesAnio(HOY); let ventasMesActual = ventas.filter(v=>{ try{ let {m,a} = getMesAnio(v.f); return m===mesActual && a===anioActual; } catch(e){ return true; } }); let ventasHoy = ventasMesActual.filter(v=>v.f === HOY); let totalHoy = ventasHoy.reduce((a,b)=>a+b.v,0); let totalMes = ventasMesActual.reduce((a,b)=>a+b.v,0); document.getElementById('totalHoy').innerText='$'+totalHoy.toLocaleString(); document.getElementById('cantHoy').innerText= ventasHoy.length + ' ventas'; document.getElementById('totalMes').innerText='$'+totalMes.toLocaleString(); document.getElementById('cantMes').innerText= ventasMesActual.length + ` ventas 1 al ${HOY.split('/')[0]}`; document.getElementById('info').innerText = `Del 1/${mesActual}/${anioActual} al ${HOY}`; ventasMesActual.slice().reverse().forEach(x=>{ const esHoy = x.f === HOY; lista.innerHTML+=`<div class=card><span><span style="color:${esHoy?'#e9a23b':'#555'}">${esHoy?'●':'○'}</span> ${x.p}<br><small style="opacity:.4;font-size:11px">${x.f} ${x.h}</small></span><b>$${x.v.toLocaleString()}</b></div>`; }); window._ventasMesActual = ventasMesActual; window._ventasHoy = ventasHoy; }
-function exportarDiario(){ let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA'; let nombre = localStorage.getItem('vendedor_nombre'); let ventasHoy = window._ventasHoy || []; if(ventasHoy.length===0){ alert('No hay ventas de hoy'); return; } let totalHoy = ventasHoy.reduce((a,b)=>a+b.v,0); let resumen = {}; ventasHoy.forEach(v=>{ if(!resumen[v.p]) resumen[v.p]={c:0,m:0}; resumen[v.p].c++; resumen[v.p].m+=v.v; }); let csv = `${negocio.toUpperCase()} - VENTA DIARIA\nVendedor,${nombre}\nFecha,${HOY}\n\nTOTAL DEL DIA,$${totalHoy},${ventasHoy.length} ventas\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`; Object.entries(resumen).forEach(([p,d])=>{ csv+=`"${p}",${d.c},${d.m}\n`; }); csv+=`\nDETALLE\nHora,Producto,Precio\n`; ventasHoy.forEach(v=>{ csv+=`${v.h},"${v.p}",${v.v}\n`; }); let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`DIARIA-${negocio}-${nombre}-${HOY.replaceAll('/','-')}-$${totalHoy}.csv`; a.click(); }
-function exportarMes(){ let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA'; let nombre = localStorage.getItem('vendedor_nombre'); let ventasMesActual = window._ventasMesActual || []; if(ventasMesActual.length===0){ alert('No hay ventas este mes'); return; } let totalMes = ventasMesActual.reduce((a,b)=>a+b.v,0); let {m, a: anio} = getMesAnio(HOY); let resumen = {}; ventasMesActual.forEach(v=>{ if(!resumen[v.p]) resumen[v.p]={c:0,m:0}; resumen[v.p].c++; resumen[v.p].m+=v.v; }); let csv = `${negocio.toUpperCase()} - REPORTE MENSUAL\nVendedor,${nombre}\nPeriodo,Del 1/${m}/${anio} al ${HOY}\nTotal del mes,$${totalMes},${ventasMesActual.length} ventas\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`; Object.entries(resumen).forEach(([p,d])=>{ csv+=`"${p}",${d.c},${d.m}\n`; }); csv+=`\nDETALLE DEL 1 AL ${HOY}\nFecha,Hora,Producto,Precio,Vendedor\n`; ventasMesActual.forEach(v=>csv+=`${v.f},${v.h},"${v.p}",${v.v},${v.vendedor}\n`); let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); let aEl=document.createElement('a'); aEl.href=URL.createObjectURL(blob); aEl.download=`MES-${m}-${anio}-${negocio}-${nombre}-$${totalMes}-${HOY.replaceAll('/','-')}.csv`; aEl.click(); }
-function cargarSabores(){ fetch('sabores.json').then(r=>r.json()).then(sabores=>{ const sel=document.getElementById('sabor'); sel.innerHTML='<option value="">Sabor para el próximo producto (opcional)</option>'; sabores.forEach(s=>{ let o=document.createElement('option'); o.value=s.nombre; o.textContent=s.nombre; sel.appendChild(o); }); }).catch(()=>{}); fetch('productos.json').then(r=>r.json()).then(data=>{ if(data && data.length){ productos=data; renderBotones(); } }).catch(()=>{}); }
-init();
-</script>
+<script src="script.js"></script>
 </body>
 </html>

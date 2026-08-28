@@ -1,7 +1,25 @@
 {
-  "name": "CHOCORLATTE",
-  "short_name": "CHOCORLATTE",
+  "name": "CUCURUCHO - Sistema de Ventas",
+  "short_name": "CUCURUCHO",
+  "description": "POS Heladería desarrollado por NaluSoft",
   "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "./index.html",
+  "scope": "./",
   "background_color": "#0a0a0a",
-  "theme_color": "#e9a23b"
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "./nalusoft.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "./nalusoft.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
 }
