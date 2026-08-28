@@ -20,8 +20,8 @@
 .linea{height:2px;background:var(--naranja);width:80px;margin:12px auto;opacity:.8}
 .prod-btn{white-space:pre-line;height:78px;font-size:13px;font-weight:800;background:#161616;color:#fff;border:1.5px solid #2a2a2a}
 .prod-btn.active{border-color:var(--naranja);background:var(--naranja-soft);color:var(--naranja)}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.brand-sub{font-size:11px;letter-spacing:2px;opacity:.6;text-transform:uppercase}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-top:10px;background:#161616;border:1px solid #232323;border-radius:14px;padding:12px 14px}
+.brand-sub{font-size:18px;font-weight:900;letter-spacing:1px;color:var(--naranja);text-transform:uppercase;line-height:1.1}
 .btn-salir{display:flex;align-items:center;gap:6px;background:#1c1c1c;border:1px solid #2a2a2a;color:#888;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.5px;width:auto;margin:0}
 .btn-salir:active{border-color:var(--naranja);color:var(--naranja);background:var(--naranja-soft)}
 .carrito-item{display:flex;justify-content:space-between;align-items:center;background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;margin-top:8px}
@@ -60,9 +60,10 @@
   <div class="topbar">
     <div>
       <div class="brand-sub" id="brandTop">TU HELADERÍA</div>
-      <h3 id="saludo" style="margin:2px 0 0 0;font-size:18px"></h3>
+      <div id="saludo" style="margin:4px 0 0 0;font-size:12px;opacity:.5;letter-spacing:.5px"></div>
     </div>
     <button class="btn-salir" onclick="cambiarUsuario()">↪ Salir</button>
+  </div>
   </div>
 
   <div style="margin-top:22px">
@@ -121,7 +122,7 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 const PRODUCTOS_DEFAULT = [ { "id": "cuarto", "nombre": "1/4 KG", "precio": 4500 }, { "id": "medio", "nombre": "1/2 KG", "precio": 8000 }, { "id": "kilo", "nombre": "1 KG", "precio": 14500 }, { "id": "vasito", "nombre": "Vasito", "precio": 3000 }, { "id": "cucurucho1", "nombre": "Cucurucho 1 bocha", "precio": 3500 }, { "id": "cucurucho2", "nombre": "Cucurucho 2 bochas", "precio": 5000 } ];
 let productos = PRODUCTOS_DEFAULT; let carrito = []; let ventas = JSON.parse(localStorage.getItem('ventas_mes') || '[]'); const HOY = new Date().toLocaleDateString();
 function getMesAnio(fechaStr){ try{ let parts = fechaStr.split('/'); return {m: parseInt(parts[1]), a: parseInt(parts[2])}; }catch(e){ return {m: new Date().getMonth()+1, a: new Date().getFullYear()}; } }
-function init(){ let negocio = localStorage.getItem('negocio_nombre'); let nombre = localStorage.getItem('vendedor_nombre'); const b = document.getElementById('bienvenida'); const a = document.getElementById('app'); const p1 = document.getElementById('paso1'); const p2 = document.getElementById('paso2'); let tituloDefault = "TU HELADERÍA"; let nombreMostrar = negocio? negocio.toUpperCase() : tituloDefault; document.getElementById('tituloBienvenida').innerText = nombreMostrar; document.getElementById('subBienvenida').innerText = negocio || "Sistema de Ventas"; document.getElementById('brandTop').innerText = nombreMostrar; document.title = negocio? `${nombreMostrar} - Ventas` : "Heladería - Sistema de Ventas"; if(negocio && nombre){ b.style.display='none'; a.style.display='block'; document.getElementById('saludo').innerText=`Turno de ${nombre}`; render(); } else if(negocio &&!nombre){ b.style.display='flex'; a.style.display='none'; p1.style.display='none'; p2.style.display='block'; } else { b.style.display='flex'; a.style.display='none'; p1.style.display='block'; p2.style.display='none'; } renderBotones(); cargarSabores(); }
+function init(){ let negocio = localStorage.getItem('negocio_nombre'); let nombre = localStorage.getItem('vendedor_nombre'); const b = document.getElementById('bienvenida'); const a = document.getElementById('app'); const p1 = document.getElementById('paso1'); const p2 = document.getElementById('paso2'); let tituloDefault = "TU HELADERÍA"; let nombreMostrar = negocio? negocio.toUpperCase() : tituloDefault; document.getElementById('tituloBienvenida').innerText = nombreMostrar; document.getElementById('subBienvenida').innerText = negocio || "Sistema de Ventas"; document.getElementById('brandTop').innerText = nombreMostrar; document.title = negocio? `${nombreMostrar} - Ventas` : "Heladería - Sistema de Ventas"; if(negocio && nombre){ b.style.display='none'; a.style.display='block'; document.getElementById('saludo').innerText=`Turno: ${nombre}`; render(); } else if(negocio &&!nombre){ b.style.display='flex'; a.style.display='none'; p1.style.display='none'; p2.style.display='block'; } else { b.style.display='flex'; a.style.display='none'; p1.style.display='block'; p2.style.display='none'; } renderBotones(); cargarSabores(); }
 function guardarNegocio(){ let n=document.getElementById('negocioInput').value.trim(); if(!n) return; localStorage.setItem('negocio_nombre', n); document.getElementById('nombreInput').focus(); init(); }
 function guardarNombre(){ let n=document.getElementById('nombreInput').value.trim(); if(!n) return; localStorage.setItem('vendedor_nombre', n); init(); }
 function cambiarUsuario(){ if(confirm('¿Cerrar turno?')){ localStorage.removeItem('vendedor_nombre'); location.reload(); } }
