@@ -50,6 +50,10 @@
     <button onclick="guardarNombre()">ENTRAR</button>
     <span onclick="cambiarNegocio()" style="display:block;margin-top:16px;font-size:12px;color:#666;text-decoration:underline">cambiar nombre del negocio</span>
   </div>
+  <div style="margin-top:30px;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.3">
+    <img src="nalusoft.png" onerror="this.style.display='none'" style="width:18px;height:18px;border-radius:4px">
+    <span style="font-size:10px;letter-spacing:1.5px">by NaluSoft</span>
+  </div>
 </div>
 
 <div id="app" style="display:none">
@@ -97,231 +101,42 @@
 
   <button onclick="exportarDiario()" style="background:#fff;color:#000;margin-top:32px">EXPORTAR VENTA DIARIA</button>
   <button onclick="exportarMes()" style="background:transparent;color:#fff;border:1.5px solid #2a2a2a;margin-top:10px">EXPORTAR TODO EL MES (1 al hoy)</button>
-  <div style="text-align:center;margin-top:18px"><span onclick="cambiarNegocio()" style="font-size:11px;color:#444;text-decoration:underline">cambiar nombre del negocio</span></div>
+
+  <!-- BANNER NALUSOFT -->
+  <div style="text-align:center;margin-top:40px;padding:24px 0 12px 0;border-top:1px solid #1a1a1a">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;opacity:.9">
+      <img src="nalusoft.png" onerror="this.style.display='none'" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#111">
+      <div style="text-align:left;line-height:1.1">
+        <div style="font-size:10px;letter-spacing:2px;opacity:.4">DESARROLLADO POR</div>
+        <div style="font-size:14px;font-weight:900;letter-spacing:1px;color:#e9a23b">NaluSoft</div>
+      </div>
+    </div>
+    <div style="font-size:10px;opacity:.25;margin-top:8px">Software libre • MIT • v1.0</div>
+    <div style="margin-top:14px"><span onclick="cambiarNegocio()" style="font-size:11px;color:#333;text-decoration:underline;cursor:pointer">cambiar nombre del negocio</span></div>
+  </div>
 </div>
 
 <script>
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-
-const PRODUCTOS_DEFAULT = [
-  { "id": "cuarto", "nombre": "1/4 KG", "precio": 4500 },
-  { "id": "medio", "nombre": "1/2 KG", "precio": 8000 },
-  { "id": "kilo", "nombre": "1 KG", "precio": 14500 },
-  { "id": "vasito", "nombre": "Vasito", "precio": 3000 },
-  { "id": "cucurucho1", "nombre": "Cucurucho 1 bocha", "precio": 3500 },
-  { "id": "cucurucho2", "nombre": "Cucurucho 2 bochas", "precio": 5000 }
-];
-
-let productos = PRODUCTOS_DEFAULT;
-let carrito = [];
-let ventas = JSON.parse(localStorage.getItem('ventas_mes') || '[]');
-const HOY = new Date().toLocaleDateString();
-
-function getMesAnio(fechaStr){
-  try{
-    let parts = fechaStr.split('/');
-    return {m: parseInt(parts[1]), a: parseInt(parts[2])};
-  }catch(e){ return {m: new Date().getMonth()+1, a: new Date().getFullYear()}; }
-}
-
-function init(){
- let negocio = localStorage.getItem('negocio_nombre');
- let nombre = localStorage.getItem('vendedor_nombre');
- const b = document.getElementById('bienvenida');
- const a = document.getElementById('app');
- const p1 = document.getElementById('paso1');
- const p2 = document.getElementById('paso2');
-
- let tituloDefault = "TU HELADERÍA";
- let nombreMostrar = negocio? negocio.toUpperCase() : tituloDefault;
-
- document.getElementById('tituloBienvenida').innerText = nombreMostrar;
- document.getElementById('subBienvenida').innerText = negocio || "Sistema de Ventas";
- document.getElementById('brandTop').innerText = nombreMostrar;
- document.title = negocio? `${nombreMostrar} - Ventas` : "Heladería - Sistema de Ventas";
-
- if(negocio && nombre){
-   b.style.display='none'; a.style.display='block';
-   document.getElementById('saludo').innerText=`Turno de ${nombre}`;
-   render();
- } else if(negocio &&!nombre){
-   b.style.display='flex'; a.style.display='none';
-   p1.style.display='none'; p2.style.display='block';
- } else {
-   b.style.display='flex'; a.style.display='none';
-   p1.style.display='block'; p2.style.display='none';
- }
- renderBotones();
- cargarSabores();
-}
-
-function guardarNegocio(){
- let n=document.getElementById('negocioInput').value.trim(); if(!n) return;
- localStorage.setItem('negocio_nombre', n);
- // pre-cargar Chocorlatte para tu amigo si quiere
- document.getElementById('nombreInput').focus();
- init();
-}
-function guardarNombre(){
- let n=document.getElementById('nombreInput').value.trim(); if(!n) return;
- localStorage.setItem('vendedor_nombre', n); init();
-}
-function cambiarUsuario(){
- if(confirm('¿Cerrar turno?')){
-   localStorage.removeItem('vendedor_nombre'); location.reload();
- }
-}
-function cambiarNegocio(){
- if(confirm('¿Cambiar nombre del negocio? Se cerrará el turno.')){
-   localStorage.removeItem('negocio_nombre');
-   localStorage.removeItem('vendedor_nombre');
-   location.reload();
- }
-}
+const PRODUCTOS_DEFAULT = [ { "id": "cuarto", "nombre": "1/4 KG", "precio": 4500 }, { "id": "medio", "nombre": "1/2 KG", "precio": 8000 }, { "id": "kilo", "nombre": "1 KG", "precio": 14500 }, { "id": "vasito", "nombre": "Vasito", "precio": 3000 }, { "id": "cucurucho1", "nombre": "Cucurucho 1 bocha", "precio": 3500 }, { "id": "cucurucho2", "nombre": "Cucurucho 2 bochas", "precio": 5000 } ];
+let productos = PRODUCTOS_DEFAULT; let carrito = []; let ventas = JSON.parse(localStorage.getItem('ventas_mes') || '[]'); const HOY = new Date().toLocaleDateString();
+function getMesAnio(fechaStr){ try{ let parts = fechaStr.split('/'); return {m: parseInt(parts[1]), a: parseInt(parts[2])}; }catch(e){ return {m: new Date().getMonth()+1, a: new Date().getFullYear()}; } }
+function init(){ let negocio = localStorage.getItem('negocio_nombre'); let nombre = localStorage.getItem('vendedor_nombre'); const b = document.getElementById('bienvenida'); const a = document.getElementById('app'); const p1 = document.getElementById('paso1'); const p2 = document.getElementById('paso2'); let tituloDefault = "TU HELADERÍA"; let nombreMostrar = negocio? negocio.toUpperCase() : tituloDefault; document.getElementById('tituloBienvenida').innerText = nombreMostrar; document.getElementById('subBienvenida').innerText = negocio || "Sistema de Ventas"; document.getElementById('brandTop').innerText = nombreMostrar; document.title = negocio? `${nombreMostrar} - Ventas` : "Heladería - Sistema de Ventas"; if(negocio && nombre){ b.style.display='none'; a.style.display='block'; document.getElementById('saludo').innerText=`Turno de ${nombre}`; render(); } else if(negocio &&!nombre){ b.style.display='flex'; a.style.display='none'; p1.style.display='none'; p2.style.display='block'; } else { b.style.display='flex'; a.style.display='none'; p1.style.display='block'; p2.style.display='none'; } renderBotones(); cargarSabores(); }
+function guardarNegocio(){ let n=document.getElementById('negocioInput').value.trim(); if(!n) return; localStorage.setItem('negocio_nombre', n); document.getElementById('nombreInput').focus(); init(); }
+function guardarNombre(){ let n=document.getElementById('nombreInput').value.trim(); if(!n) return; localStorage.setItem('vendedor_nombre', n); init(); }
+function cambiarUsuario(){ if(confirm('¿Cerrar turno?')){ localStorage.removeItem('vendedor_nombre'); location.reload(); } }
+function cambiarNegocio(){ if(confirm('¿Cambiar nombre del negocio? Se cerrará el turno.')){ localStorage.removeItem('negocio_nombre'); localStorage.removeItem('vendedor_nombre'); location.reload(); } }
 function guardar(){ localStorage.setItem('ventas_mes', JSON.stringify(ventas)); render(); }
-
-function renderBotones(){
-  const cont=document.getElementById('botones'); if(!cont) return; cont.innerHTML='';
-  productos.forEach(p=>{
-    let btn=document.createElement('button');
-    btn.className='prod-btn';
-    btn.innerText=`${p.nombre}\n$${p.precio.toLocaleString()}`;
-    btn.onclick=()=>seleccionarProducto(p, btn);
-    cont.appendChild(btn);
-  });
-}
-
-function seleccionarProducto(p, btn){
-  let sabor = document.getElementById('sabor').value;
-  btn.classList.add('active');
-  setTimeout(()=>btn.classList.remove('active'),150);
-  let idx = carrito.findIndex(c=>c.id===p.id && c.sabor===sabor);
-  if(idx>=0){ carrito[idx].cant++; }
-  else { carrito.push({id:p.id, nombre:p.nombre, precio:p.precio, sabor: sabor, cant:1}); }
-  document.getElementById('sabor').value='';
-  renderCarrito();
-}
-
-function renderCarrito(){
-  const cont = document.getElementById('carrito');
-  const lista = document.getElementById('carritoLista');
-  const btnVender = document.getElementById('btnVender');
-  const btnVaciar = document.getElementById('btnVaciar');
-  if(carrito.length===0){ cont.style.display='none'; btnVender.style.display='none'; btnVaciar.style.display='none'; return; }
-  cont.style.display='block'; btnVender.style.display='block'; btnVaciar.style.display='block';
-  lista.innerHTML='';
-  let total=0;
-  carrito.forEach((item,i)=>{
-    let sub = item.precio*item.cant; total+=sub;
-    lista.innerHTML+=`
-      <div class="carrito-item">
-        <div><b>${item.nombre}</b><br><small style="opacity:.5">${item.sabor||'sin sabor'}</small></div>
-        <div class="qty">
-          <button onclick="cambiarCant(${i},-1)">−</button>
-          <span style="min-width:20px;text-align:center;font-weight:800">${item.cant}</span>
-          <button class="plus" onclick="cambiarCant(${i},1)">+</button>
-          <b style="color:var(--naranja);margin-left:8px;min-width:60px;text-align:right">$${sub.toLocaleString()}</b>
-        </div>
-      </div>`;
-  });
-  document.getElementById('carritoTotal').innerText='$'+total.toLocaleString();
-}
-
-function cambiarCant(index, delta){
-  carrito[index].cant+=delta;
-  if(carrito[index].cant<=0) carrito.splice(index,1);
-  renderCarrito();
-}
+function renderBotones(){ const cont=document.getElementById('botones'); if(!cont) return; cont.innerHTML=''; productos.forEach(p=>{ let btn=document.createElement('button'); btn.className='prod-btn'; btn.innerText=`${p.nombre}\n$${p.precio.toLocaleString()}`; btn.onclick=()=>seleccionarProducto(p, btn); cont.appendChild(btn); }); }
+function seleccionarProducto(p, btn){ let sabor = document.getElementById('sabor').value; btn.classList.add('active'); setTimeout(()=>btn.classList.remove('active'),150); let idx = carrito.findIndex(c=>c.id===p.id && c.sabor===sabor); if(idx>=0){ carrito[idx].cant++; } else { carrito.push({id:p.id, nombre:p.nombre, precio:p.precio, sabor: sabor, cant:1}); } document.getElementById('sabor').value=''; renderCarrito(); }
+function renderCarrito(){ const cont = document.getElementById('carrito'); const lista = document.getElementById('carritoLista'); const btnVender = document.getElementById('btnVender'); const btnVaciar = document.getElementById('btnVaciar'); if(carrito.length===0){ cont.style.display='none'; btnVender.style.display='none'; btnVaciar.style.display='none'; return; } cont.style.display='block'; btnVender.style.display='block'; btnVaciar.style.display='block'; lista.innerHTML=''; let total=0; carrito.forEach((item,i)=>{ let sub = item.precio*item.cant; total+=sub; lista.innerHTML+=` <div class="carrito-item"> <div><b>${item.nombre}</b><br><small style="opacity:.5">${item.sabor||'sin sabor'}</small></div> <div class="qty"> <button onclick="cambiarCant(${i},-1)">−</button> <span style="min-width:20px;text-align:center;font-weight:800">${item.cant}</span> <button class="plus" onclick="cambiarCant(${i},1)">+</button> <b style="color:var(--naranja);margin-left:8px;min-width:60px;text-align:right">$${sub.toLocaleString()}</b> </div> </div>`; }); document.getElementById('carritoTotal').innerText='$'+total.toLocaleString(); }
+function cambiarCant(index, delta){ carrito[index].cant+=delta; if(carrito[index].cant<=0) carrito.splice(index,1); renderCarrito(); }
 function vaciarCarrito(){ carrito=[]; renderCarrito(); }
-
-function agregar(){
-  if(carrito.length===0){ alert('Carrito vacío'); return; }
-  carrito.forEach(item=>{
-    for(let k=0;k<item.cant;k++){
-      ventas.push({
-        f:HOY, h:new Date().toLocaleTimeString(),
-        p: item.nombre + (item.sabor?' - '+item.sabor:''),
-        v: item.precio,
-        vendedor: localStorage.getItem('vendedor_nombre')
-      });
-    }
-  });
-  guardar();
-  carrito=[]; renderCarrito();
-}
-
-function render(){
- const lista=document.getElementById('lista');
- lista.innerHTML='';
- let {m: mesActual, a: anioActual} = getMesAnio(HOY);
- let ventasMesActual = ventas.filter(v=>{
-   try{ let {m,a} = getMesAnio(v.f); return m===mesActual && a===anioActual; } catch(e){ return true; }
- });
- let ventasHoy = ventasMesActual.filter(v=>v.f === HOY);
- let totalHoy = ventasHoy.reduce((a,b)=>a+b.v,0);
- let totalMes = ventasMesActual.reduce((a,b)=>a+b.v,0);
-
- document.getElementById('totalHoy').innerText='$'+totalHoy.toLocaleString();
- document.getElementById('cantHoy').innerText= ventasHoy.length + ' ventas';
- document.getElementById('totalMes').innerText='$'+totalMes.toLocaleString();
- document.getElementById('cantMes').innerText= ventasMesActual.length + ` ventas 1 al ${HOY.split('/')[0]}`;
- document.getElementById('info').innerText = `Del 1/${mesActual}/${anioActual} al ${HOY}`;
-
- ventasMesActual.slice().reverse().forEach(x=>{
-   const esHoy = x.f === HOY;
-   lista.innerHTML+=`<div class=card><span><span style="color:${esHoy?'#e9a23b':'#555'}">${esHoy?'●':'○'}</span> ${x.p}<br><small style="opacity:.4;font-size:11px">${x.f} ${x.h}</small></span><b>$${x.v.toLocaleString()}</b></div>`;
- });
- window._ventasMesActual = ventasMesActual;
- window._ventasHoy = ventasHoy;
-}
-
-function exportarDiario(){
- let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA';
- let nombre = localStorage.getItem('vendedor_nombre');
- let ventasHoy = window._ventasHoy || [];
- if(ventasHoy.length===0){ alert('No hay ventas de hoy'); return; }
- let totalHoy = ventasHoy.reduce((a,b)=>a+b.v,0);
- let resumen = {};
- ventasHoy.forEach(v=>{ if(!resumen[v.p]) resumen[v.p]={c:0,m:0}; resumen[v.p].c++; resumen[v.p].m+=v.v; });
- let csv = `${negocio.toUpperCase()} - VENTA DIARIA\nVendedor,${nombre}\nFecha,${HOY}\n\nTOTAL DEL DIA,$${totalHoy},${ventasHoy.length} ventas\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`;
- Object.entries(resumen).forEach(([p,d])=>{ csv+=`"${p}",${d.c},${d.m}\n`; });
- csv+=`\nDETALLE\nHora,Producto,Precio\n`;
- ventasHoy.forEach(v=>{ csv+=`${v.h},"${v.p}",${v.v}\n`; });
- let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
- let a=document.createElement('a'); a.href=URL.createObjectURL(blob);
- a.download=`DIARIA-${negocio}-${nombre}-${HOY.replaceAll('/','-')}-$${totalHoy}.csv`; a.click();
-}
-
-function exportarMes(){
- let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA';
- let nombre = localStorage.getItem('vendedor_nombre');
- let ventasMesActual = window._ventasMesActual || [];
- if(ventasMesActual.length===0){ alert('No hay ventas este mes'); return; }
- let totalMes = ventasMesActual.reduce((a,b)=>a+b.v,0);
- let {m, a: anio} = getMesAnio(HOY);
- let resumen = {};
- ventasMesActual.forEach(v=>{ if(!resumen[v.p]) resumen[v.p]={c:0,m:0}; resumen[v.p].c++; resumen[v.p].m+=v.v; });
- let csv = `${negocio.toUpperCase()} - REPORTE MENSUAL\nVendedor,${nombre}\nPeriodo,Del 1/${m}/${anio} al ${HOY}\nTotal del mes,$${totalMes},${ventasMesActual.length} ventas\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`;
- Object.entries(resumen).forEach(([p,d])=>{ csv+=`"${p}",${d.c},${d.m}\n`; });
- csv+=`\nDETALLE DEL 1 AL ${HOY}\nFecha,Hora,Producto,Precio,Vendedor\n`;
- ventasMesActual.forEach(v=>csv+=`${v.f},${v.h},"${v.p}",${v.v},${v.vendedor}\n`);
- let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
- let aEl=document.createElement('a'); aEl.href=URL.createObjectURL(blob);
- aEl.download=`MES-${m}-${anio}-${negocio}-${nombre}-$${totalMes}-${HOY.replaceAll('/','-')}.csv`; aEl.click();
-}
-
-function cargarSabores(){
-  fetch('sabores.json').then(r=>r.json()).then(sabores=>{
-    const sel=document.getElementById('sabor');
-    sel.innerHTML='<option value="">Sabor para el próximo producto (opcional)</option>';
-    sabores.forEach(s=>{
-      let o=document.createElement('option'); o.value=s.nombre; o.textContent=s.nombre; sel.appendChild(o);
-    });
-  }).catch(()=>{});
-  fetch('productos.json').then(r=>r.json()).then(data=>{
-    if(data && data.length){ productos=data; renderBotones(); }
-  }).catch(()=>{});
-}
+function agregar(){ if(carrito.length===0){ alert('Carrito vacío'); return; } carrito.forEach(item=>{ for(let k=0;k<item.cant;k++){ ventas.push({ f:HOY, h:new Date().toLocaleTimeString(), p: item.nombre + (item.sabor?' - '+item.sabor:''), v: item.precio, vendedor: localStorage.getItem('vendedor_nombre') }); } }); guardar(); carrito=[]; renderCarrito(); }
+function render(){ const lista=document.getElementById('lista'); lista.innerHTML=''; let {m: mesActual, a: anioActual} = getMesAnio(HOY); let ventasMesActual = ventas.filter(v=>{ try{ let {m,a} = getMesAnio(v.f); return m===mesActual && a===anioActual; } catch(e){ return true; } }); let ventasHoy = ventasMesActual.filter(v=>v.f === HOY); let totalHoy = ventasHoy.reduce((a,b)=>a+b.v,0); let totalMes = ventasMesActual.reduce((a,b)=>a+b.v,0); document.getElementById('totalHoy').innerText='$'+totalHoy.toLocaleString(); document.getElementById('cantHoy').innerText= ventasHoy.length + ' ventas'; document.getElementById('totalMes').innerText='$'+totalMes.toLocaleString(); document.getElementById('cantMes').innerText= ventasMesActual.length + ` ventas 1 al ${HOY.split('/')[0]}`; document.getElementById('info').innerText = `Del 1/${mesActual}/${anioActual} al ${HOY}`; ventasMesActual.slice().reverse().forEach(x=>{ const esHoy = x.f === HOY; lista.innerHTML+=`<div class=card><span><span style="color:${esHoy?'#e9a23b':'#555'}">${esHoy?'●':'○'}</span> ${x.p}<br><small style="opacity:.4;font-size:11px">${x.f} ${x.h}</small></span><b>$${x.v.toLocaleString()}</b></div>`; }); window._ventasMesActual = ventasMesActual; window._ventasHoy = ventasHoy; }
+function exportarDiario(){ let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA'; let nombre = localStorage.getItem('vendedor_nombre'); let ventasHoy = window._ventasHoy || []; if(ventasHoy.length===0){ alert('No hay ventas de hoy'); return; } let totalHoy = ventasHoy.reduce((a,b)=>a+b.v,0); let resumen = {}; ventasHoy.forEach(v=>{ if(!resumen[v.p]) resumen[v.p]={c:0,m:0}; resumen[v.p].c++; resumen[v.p].m+=v.v; }); let csv = `${negocio.toUpperCase()} - VENTA DIARIA\nVendedor,${nombre}\nFecha,${HOY}\n\nTOTAL DEL DIA,$${totalHoy},${ventasHoy.length} ventas\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`; Object.entries(resumen).forEach(([p,d])=>{ csv+=`"${p}",${d.c},${d.m}\n`; }); csv+=`\nDETALLE\nHora,Producto,Precio\n`; ventasHoy.forEach(v=>{ csv+=`${v.h},"${v.p}",${v.v}\n`; }); let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`DIARIA-${negocio}-${nombre}-${HOY.replaceAll('/','-')}-$${totalHoy}.csv`; a.click(); }
+function exportarMes(){ let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA'; let nombre = localStorage.getItem('vendedor_nombre'); let ventasMesActual = window._ventasMesActual || []; if(ventasMesActual.length===0){ alert('No hay ventas este mes'); return; } let totalMes = ventasMesActual.reduce((a,b)=>a+b.v,0); let {m, a: anio} = getMesAnio(HOY); let resumen = {}; ventasMesActual.forEach(v=>{ if(!resumen[v.p]) resumen[v.p]={c:0,m:0}; resumen[v.p].c++; resumen[v.p].m+=v.v; }); let csv = `${negocio.toUpperCase()} - REPORTE MENSUAL\nVendedor,${nombre}\nPeriodo,Del 1/${m}/${anio} al ${HOY}\nTotal del mes,$${totalMes},${ventasMesActual.length} ventas\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`; Object.entries(resumen).forEach(([p,d])=>{ csv+=`"${p}",${d.c},${d.m}\n`; }); csv+=`\nDETALLE DEL 1 AL ${HOY}\nFecha,Hora,Producto,Precio,Vendedor\n`; ventasMesActual.forEach(v=>csv+=`${v.f},${v.h},"${v.p}",${v.v},${v.vendedor}\n`); let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); let aEl=document.createElement('a'); aEl.href=URL.createObjectURL(blob); aEl.download=`MES-${m}-${anio}-${negocio}-${nombre}-$${totalMes}-${HOY.replaceAll('/','-')}.csv`; aEl.click(); }
+function cargarSabores(){ fetch('sabores.json').then(r=>r.json()).then(sabores=>{ const sel=document.getElementById('sabor'); sel.innerHTML='<option value="">Sabor para el próximo producto (opcional)</option>'; sabores.forEach(s=>{ let o=document.createElement('option'); o.value=s.nombre; o.textContent=s.nombre; sel.appendChild(o); }); }).catch(()=>{}); fetch('productos.json').then(r=>r.json()).then(data=>{ if(data && data.length){ productos=data; renderBotones(); } }).catch(()=>{}); }
 init();
 </script>
 </body>
