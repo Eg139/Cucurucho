@@ -10,32 +10,49 @@
 <meta name="description" content="CUCURUCHO - Sistema de ventas heladería by NaluSoft">
 <title>CUCURUCHO - by NaluSoft</title>
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="nalusoft.jpg">
+<link rel="apple-touch-icon" href="nalusoft.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="bienvenida">
+  <div class="nalu-badge">
+    <span class="dot"></span> DESARROLLADO POR NALUSOFT
+  </div>
+  
   <div class="logo">🍦</div>
   <h1 id="tituloBienvenida">TU HELADERÍA</h1>
   <div class="linea"></div>
   <p id="subBienvenida">Sistema de Ventas</p>
 
-  <div id="paso1">
-    <p style="opacity:.6;margin-top:30px">¿Cómo se llama tu negocio?</p>
+  <div id="paso1" class="paso-card">
+    <p class="paso-label">¿Cómo se llama tu negocio?</p>
     <input id="negocioInput" placeholder="Ej: Chocorlatte, Grido, etc">
-    <button onclick="guardarNegocio()">SIGUIENTE</button>
+    <button onclick="guardarNegocio()">SIGUIENTE →</button>
   </div>
-  <div id="paso2" style="display:none">
-    <p style="opacity:.6;margin-top:30px">Ahora tu nombre para el turno</p>
+
+  <div id="paso2" style="display:none" class="paso-card">
+    <p class="paso-label">Ahora tu nombre para el turno</p>
     <input id="nombreInput" placeholder="Ej: Tomas">
-    <button onclick="guardarNombre()">SIGUIENTE</button>
-    <span onclick="cambiarNegocio()" style="display:block;margin-top:16px;font-size:12px;color:#666;text-decoration:underline">cambiar nombre del negocio</span>
+    <button onclick="guardarNombre()">SIGUIENTE →</button>
+    <span onclick="cambiarNegocio()" class="link-muted">cambiar nombre del negocio</span>
   </div>
-  <div id="paso3" style="display:none;text-align:left">
-    <p style="opacity:.6;margin-top:30px;text-align:center">Configurá tus precios</p>
+
+  <div id="paso3" style="display:none" class="paso-card">
+    <p class="paso-label" style="text-align:center">Configurá tus precios</p>
     <div id="listaPreciosConfig"></div>
     <button onclick="guardarPrecios()" style="margin-top:20px">GUARDAR PRECIOS Y ENTRAR</button>
+  </div>
+
+  <div class="footer-nalu">
+    <a href="https://nalusoft.com.ar" target="_blank">
+      <img src="nalusoft.png" alt="NaluSoft">
+      <div>
+        <b>nalusoft.com.ar</b>
+        <span>Software para negocios que crecen</span>
+      </div>
+    </a>
+    <div class="version">v2.0 • CUCURUCHO</div>
   </div>
 </div>
 
@@ -89,6 +106,23 @@
 
   <button onclick="exportarDiario()" style="background:#fff;color:#000;margin-top:32px">EXPORTAR VENTA DIARIA</button>
   <button onclick="exportarMes()" style="background:transparent;color:#fff;border:1.5px solid #2a2a2a;margin-top:10px">EXPORTAR TODO EL MES (1 al hoy)</button>
+
+    <div style="text-align:center;margin-top:40px;padding:24px 0 12px 0;border-top:1px solid #1a1a1a">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;opacity:.9">
+      <img src="nalusoft.png" style="width:28px;height:28px;border-radius:6px;background:#111">
+      <div style="text-align:left;line-height:1.1">
+        <div style="font-size:10px;letter-spacing:2px;opacity:.4">DESARROLLADO POR</div>
+        <div style="font-size:14px;font-weight:900;letter-spacing:1px;color:#e9a23b">NaluSoft</div>
+      </div>
+    </div>
+    <div style="font-size:10px;opacity:.25;margin-top:8px">nalusoft.com.ar • v2.0 CUCURUCHO</div>
+    <div style="margin-top:14px;display:flex;gap:16px;justify-content:center">
+      <span onclick="cambiarNegocio()" style="font-size:11px;color:#333;text-decoration:underline;cursor:pointer">cambiar negocio</span>
+      <span onclick="editarPrecios()" style="font-size:11px;color:var(--naranja);text-decoration:underline;cursor:pointer">cambiar precios</span>
+    </div>
+  </div>
+
+
 </div>
 
 <div id="modalCierres" class="modal" onclick="if(event.target===this) cerrarModal()">
