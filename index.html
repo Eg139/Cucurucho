@@ -3,134 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CUCURUCHO">
-<meta name="theme-color" content="#0a0a0a">
-<meta name="description" content="CUCURUCHO - Sistema de ventas heladería by NaluSoft">
-<title>CUCURUCHO - by NaluSoft</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="nalusoft.png">
+<meta name="theme-color" content="#0c0c0e">
+<title>CUCURUCHO | by NaluSoft</title>
+<!-- SweetAlert2 CSS y JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
 
-<div id="bienvenida">
-  <div class="nalu-badge">
-    <span class="dot"></span> DESARROLLADO POR NALUSOFT
+<!-- MODAL REGISTRO POR INVITACIÓN -->
+<div id="modalRegistroInvite" class="modal">
+  <div class="modal-content" style="max-width: 360px; text-align: center;">
+    <h3 id="modalHeladeriaTitulo" style="color: var(--naranja, #ff9f43); margin-bottom: 6px;">¡Bienvenido!</h3>
+    <p style="font-size: 12px; opacity: 0.8; margin-bottom: 16px;">Creá tu cuenta para gestionar la heladería</p>
+    
+    <input id="inviteEmail" type="email" placeholder="Correo electrónico" style="width: 100%; margin-bottom: 10px;">
+    <input id="invitePass" type="password" placeholder="Contraseña (mín. 6 caracteres)" style="width: 100%; margin-bottom: 14px;">
+    
+    <button id="btnConfirmarRegistro" style="width: 100%; background: var(--naranja, #ff9f43); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; border: none; cursor: pointer;">
+      CREAR CUENTA Y ENTRAR
+    </button>
+    
+    <p id="msgInvite" style="font-size: 11px; color: #ff6b6b; margin-top: 10px; min-height: 14px;"></p>
   </div>
-  
+</div>
+<div id="bienvenida">
   <div class="logo">🍦</div>
-  <h1 id="tituloBienvenida">TU HELADERÍA</h1>
+  <h1 id="tituloBienvenida">CUCURUCHO</h1>
   <div class="linea"></div>
-  <p id="subBienvenida">Sistema de Ventas</p>
+  <div id="subBienvenida">by NaluSoft</div>
 
+  <!-- Paso 1: Negocio -->
   <div id="paso1" class="paso-card">
     <p class="paso-label">¿Cómo se llama tu negocio?</p>
-    <input id="negocioInput" placeholder="Ej: Chocorlatte, Grido, etc">
+    <input id="negocioInput" placeholder="Ej: Heladeria Eric">
     <button onclick="guardarNegocio()">SIGUIENTE →</button>
   </div>
 
-  <div id="paso2" style="display:none" class="paso-card">
-    <p class="paso-label">Ahora tu nombre para el turno</p>
-    <input id="nombreInput" placeholder="Ej: Tomas">
-    <button onclick="guardarNombre()">SIGUIENTE →</button>
-    <span onclick="cambiarNegocio()" class="link-muted">cambiar nombre del negocio</span>
+  <!-- Paso 2: Vendedor -->
+  <div id="paso2" class="paso-card" style="display:none">
+    <p class="paso-label">Tu nombre</p>
+    <input id="nombreInput" placeholder="Ej: Eric">
+    <button onclick="guardarNombre()">ENTRAR</button>
   </div>
 
-  <div id="paso3" style="display:none" class="paso-card">
-    <p class="paso-label" style="text-align:center">Configurá tus precios</p>
+  <!-- Paso 3: Precios / Login (se pisa dinámicamente) -->
+  <div id="paso3" class="paso-card" style="display:none">
+    <p class="paso-label">Precios</p>
     <div id="listaPreciosConfig"></div>
-    <button onclick="guardarPrecios()" style="margin-top:20px">GUARDAR PRECIOS Y ENTRAR</button>
-  </div>
-
-  <div class="footer-nalu">
-    <a href="https://nalusoft.com.ar" target="_blank">
-      <img src="nalusoft.png" alt="NaluSoft">
-      <div>
-        <b>nalusoft.com.ar</b>
-        <span>Software para negocios que crecen</span>
-      </div>
-    </a>
-    <div class="version">v2.0 • CUCURUCHO</div>
+    <button onclick="guardarPrecios()">GUARDAR Y ENTRAR</button>
   </div>
 </div>
 
 <div id="app" style="display:none">
   <div class="topbar">
-    <div><div class="brand-sub" id="brandTop"></div><div id="saludo"></div></div>
-    <button class="btn-salir" onclick="cambiarUsuario()">↪ Salir</button>
+    <div>
+      <div class="brand-sub" id="brandTop">CUCURUCHO</div>
+      <div style="font-size:9px;color:#e9c891;letter-spacing:1px">by NaluSoft</div>
+      <div id="saludo" style="font-size:11px;color:#8a8278">• Turno</div>
+    </div>
+    <!-- Cambiar de turno/empleado -->
+<button class="btn-salir" onclick="cambiarUsuario()">CAMBIAR VENDEDOR</button>
+
+<!-- Cerrar sesión de la heladería en Supabase -->
+<button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
   </div>
 
-  <div style="margin-top:22px">
-    <div style="font-size:11px;opacity:.5;letter-spacing:1px;margin-bottom:8px">ELEGÍ EL PRODUCTO</div>
-    <div id="botones" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
-  </div>
-
-  <div id="carrito" style="margin-top:16px;display:none">
-    <div style="font-size:11px;opacity:.5;letter-spacing:1px;margin-bottom:6px">CARRITO</div>
-    <div id="carritoLista"></div>
-    <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px dashed #333">
-      <span style="opacity:.6">Total pedido</span><b id="carritoTotal"></b>
+  <div class="card-ventas">
+    <div class="ventas-head">✨ Ventas hoy</div>
+    <div class="ventas-grid">
+      <div><small>↗ Ingresos</small><b id="totalHoy">$0</b></div>
+      <div><small>🗒 Pedidos</small><b id="cantHoy">0</b></div>
+      <div><small>↗ Promedio</small><b id="promHoy">$0 <span>+12%</span></b></div>
     </div>
   </div>
 
-  <div id="bloqueCobro" style="display:none">
-    <div class="pay-grid">
-      <button class="pay-btn pay-efectivo" onclick="cobrar('EFECTIVO')">🟢 EFECTIVO</button>
-      <button class="pay-btn pay-mp" onclick="cobrar('MP')">🔵 MERCADO PAGO</button>
-      <button class="pay-btn pay-trans" onclick="cobrar('TRANSFER')">TRANSFER.</button>
-      <button class="pay-btn pay-py" id="btnPY"></button>
-    </div>
-    <div id="previewPY" style="display:none;margin-top:10px;background:#2a1a1a;border:1px solid #dc2626;border-radius:12px;padding:10px;text-align:center;font-size:13px"></div>
-    <button onclick="vaciarCarrito()" style="background:transparent;color:#666;border:1px solid #2a2a2a;margin-top:8px;font-size:13px">VACIAR CARRITO</button>
-  </div>
+  <div class="prod-head"><h2>Productos</h2><span onclick="editarPrecios()">Agregar personalizado +</span></div>
+  <div id="botones"></div>
+  <div style="text-align:center;font-size:10px;color:#555;margin:12px 0">Powered by NaluSoft</div>
 
-  <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-    <div style="background:#161616;border:1px solid #2a2a2a;border-radius:14px;padding:14px">
-      <div style="font-size:10px;opacity:.5;letter-spacing:1px">HOY (turno actual)</div><div id="totalHoy"></div><div id="cantHoy"></div>
-    </div>
-    <div style="background:#2a2113;border:1px solid #e9a23b;border-radius:14px;padding:14px">
-      <div style="font-size:10px;opacity:.6;letter-spacing:1px">MES (1 al hoy)</div><div id="totalMes"></div><div id="cantMes"></div>
-    </div>
+  <div class="gestion-box">
+    <button class="btn-cerrar" onclick="cerrarTurno()">🔒 CERRAR TURNO - EXPORTAR EXCEL</button>
+    <button class="btn-ghost" onclick="verCierres()">📋 Historial</button>
+    <button class="btn-ghost" onclick="exportarDiario()">📊 Exportar día</button>
+    <button class="btn-ghost" onclick="exportarMes()" style="grid-column:1 / -1">📈 Exportar TODO el mes</button>
   </div>
-  <div id="info" style="opacity:.5;font-size:11px;margin-top:10px;text-align:center"></div>
-
-  <button onclick="cerrarTurno()" style="background:#e9a23b;color:#000;margin-top:16px;border:2px solid #e9a23b">🔒 CERRAR TURNO ACTUAL</button>
-  <button onclick="verCierres()" style="background:transparent;color:#888;border:1px solid #2a2a2a;margin-top:8px;font-size:12px">VER HISTORIAL DE CIERRES</button>
 
   <div class="detalle-ventas">
-    <div class="detalle-head" onclick="toggleVentas()"><b id="tituloVentas">VENTAS DEL DÍA</b><span id="btnToggleVentas">▼ Ver ventas</span></div>
-    <div class="detalle-body" id="contenedorLista"><div id="lista"></div></div>
+    <div class="detalle-head" onclick="toggleVentas()"><b id="tituloVentas">VENTAS DEL DÍA (0)</b><span id="btnToggleVentas">▼ Ver</span></div>
+    <div id="contenedorLista"><div id="lista"></div></div>
   </div>
 
-  <button onclick="exportarDiario()" style="background:#fff;color:#000;margin-top:32px">EXPORTAR VENTA DIARIA</button>
-  <button onclick="exportarMes()" style="background:transparent;color:#fff;border:1.5px solid #2a2a2a;margin-top:10px">EXPORTAR TODO EL MES (1 al hoy)</button>
-
-    <div style="text-align:center;margin-top:40px;padding:24px 0 12px 0;border-top:1px solid #1a1a1a">
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;opacity:.9">
-      <img src="nalusoft.png" style="width:28px;height:28px;border-radius:6px;background:#111">
-      <div style="text-align:left;line-height:1.1">
-        <div style="font-size:10px;letter-spacing:2px;opacity:.4">DESARROLLADO POR</div>
-        <div style="font-size:14px;font-weight:900;letter-spacing:1px;color:#e9a23b">NaluSoft</div>
-      </div>
+  <div id="carrito-bar" style="display:none">
+    <div class="carrito-inner">
+      <div style="display:flex;gap:10px;align-items:center"><div class="bag">👜</div><div><small id="carritoCount">0 items</small><b id="carritoTotalBar">$0</b></div></div>
+      <button class="btn-pagar" onclick="abrirPagar()">Pagar <span>›</span></button>
     </div>
-    <div style="font-size:10px;opacity:.25;margin-top:8px">nalusoft.com.ar • v2.0 CUCURUCHO</div>
-    <div style="margin-top:14px;display:flex;gap:16px;justify-content:center">
-      <span onclick="cambiarNegocio()" style="font-size:11px;color:#333;text-decoration:underline;cursor:pointer">cambiar negocio</span>
-      <span onclick="editarPrecios()" style="font-size:11px;color:var(--naranja);text-decoration:underline;cursor:pointer">cambiar precios</span>
-    </div>
+    <div id="carritoLista" style="display:none"></div>
+    <div id="previewPY" style="display:none"></div>
   </div>
-
-
 </div>
 
-<div id="modalCierres" class="modal" onclick="if(event.target===this) cerrarModal()">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center"><b>HISTORIAL DE CIERRES</b><button onclick="cerrarModal()" style="width:auto;padding:6px 12px;background:#222;color:#fff;margin:0">X</button></div>
-    <div id="listaCierres" style="margin-top:12px"></div>
+<div id="modalPagar" class="modal"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b style="font-size:13px">Elegí método</b><button onclick="cerrarPagar()" style="width:auto;background:#222;color:#fff;padding:4px 10px;border:0;border-radius:6px">X</button></div>
+  <div class="pay-grid">
+    <button class="pay-btn pay-ef" onclick="cobrar('EFECTIVO');cerrarPagar()">● EFECTIVO</button>
+    <button class="pay-btn pay-mp" onclick="cobrar('MP');cerrarPagar()">● MP</button>
+    <button class="pay-btn pay-tr" onclick="cobrar('TRANSFER');cerrarPagar()">TRANSFER</button>
+    <button class="pay-btn pay-py" onclick="cobrar('PEDIDOSYA');cerrarPagar()">● PEDIDOS YA +35%</button>
   </div>
-</div>
+</div></div>
+<div id="modalCierres" class="modal" onclick="if(event.target===this) cerrarModal()"><div class="modal-box"><b>CIERRES</b><div id="listaCierres"></div></div></div>
 
 <script src="script.js"></script>
 </body>
