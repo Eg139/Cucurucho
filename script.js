@@ -19,7 +19,7 @@ const HOY = new Date().toLocaleDateString();
 let COMISION_PY = Number(localStorage.getItem('comisionPY') || 35);
 
 async function checkInvite() {
-  return true; // MODO PRUEBA TOTAL
+  return true;
 }
 
 // UN SOLO INIT UNIFICADO Y ASYNC
@@ -30,8 +30,6 @@ async function init() {
   const p2 = document.getElementById('paso2'); 
   const p3 = document.getElementById('paso3');
 
-  // --- PROCESAMIENTO AUTOMÁTICO DE TOKEN DE INVITACIÓN VÍA RPC SECURE ---
-// --- PROCESAMIENTO AUTOMÁTICO DE TOKEN VÍA RPC SECURE + MODAL ---
   const currentUrl = new URL(window.location.href);
   const inviteToken = currentUrl.searchParams.get('invite');
 
@@ -41,13 +39,16 @@ async function init() {
 
     const cleanToken = inviteToken.trim();
 
-    // 1. Validar token en Postgres
     const { data: rpcData, error: rpcError } = await supabaseClient
       .rpc('validar_y_usar_invitacion', { p_token: cleanToken });
 
     if (rpcError || !rpcData || rpcData.length === 0 || !rpcData[0].valido) {
       console.error("Error al validar token vía RPC:", rpcError);
-      alert("El enlace de invitación es inválido, ya fue utilizado o ha expirado.");
+      await Swal.fire({
+        title: 'Error de invitación',
+        text: 'El enlace es inválido, ya fue utilizado o ha expirado.',
+        icon: 'error'
+      });
       currentUrl.searchParams.delete('invite');
       window.location.href = currentUrl.toString();
       return;
@@ -55,7 +56,6 @@ async function init() {
 
     const inviteData = rpcData[0];
 
-    // 2. Mostrar Modal estilizado y esperar credenciales del usuario
     const modal = document.getElementById('modalRegistroInvite');
     const titulo = document.getElementById('modalHeladeriaTitulo');
     const msg = document.getElementById('msgInvite');
@@ -67,7 +67,6 @@ async function init() {
     
     modal.classList.add('open');
 
-    // Promesa para capturar el click del botón sin bloquear el hilo principal
     const credenciales = await new Promise((resolve) => {
       btn.onclick = () => {
         const email = document.getElementById('inviteEmail').value.trim();
@@ -90,7 +89,6 @@ async function init() {
       };
     });
 
-    // 3. Registrar usuario en Auth
     const { error: authError } = await supabaseClient.auth.signUp({
       email: credenciales.email,
       password: credenciales.pass
@@ -103,7 +101,6 @@ async function init() {
       return;
     }
 
-    // 4. Iniciar sesión automáticamente
     const { error: loginError } = await supabaseClient.auth.signInWithPassword({
       email: credenciales.email,
       password: credenciales.pass
@@ -116,7 +113,6 @@ async function init() {
       return;
     }
 
-    // 5. Guardar datos locales y recargar app limpia
     if (inviteData.heladeria_nombre) {
       localStorage.setItem('negocio_nombre', inviteData.heladeria_nombre);
     }
@@ -127,9 +123,7 @@ async function init() {
     location.reload();
     return;
   }
-  // ----------------------------------------------------
 
-  // --- CHEQUEO SUPABASE NORMAL (LOGIN) ---
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) {
     if (b) b.style.setProperty('display', 'flex', 'important');
@@ -171,7 +165,7 @@ async function init() {
     a.style.setProperty('display', 'none', 'important');
     p1.style.display = 'none'; p2.style.display = 'none'; p3.style.display = 'block';
     if (p3.querySelector('#email')) {
-       p3.innerHTML = `<p class="paso-label">Precios</p><div id="listaPreciosConfig"></div><button onclick="guardarPrecios()">GUARDAR Y ENTRAR</button>`;
+        p3.innerHTML = `<p class="paso-label">Precios</p><div id="listaPreciosConfig"></div><button onclick="guardarPrecios()">GUARDAR Y ENTRAR</button>`;
     }
     renderPasoPrecios();
   } else {
@@ -250,8 +244,17 @@ function guardarPrecios() {
   render();
 }
 
-function editarPrecios() { 
-  if (confirm('¿Editar precios?')) { 
+async function editarPrecios() { 
+  const res = await Swal.fire({
+    title: '¿Editar precios?',
+    text: 'Volverás a la pantalla de configuración de productos.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, editar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (res.isConfirmed) { 
     localStorage.removeItem('productos_config'); 
     productos = PRODUCTOS_DEFAULT; 
     document.getElementById('app').style.display = 'none'; 
@@ -270,9 +273,12 @@ function toggleVentas() {
   btn.innerText = body.classList.contains('abierto') ? '▲ Ocultar' : '▼ Ver'; 
 }
 
-function guardarNegocio() {
+async function guardarNegocio() {
   let n = document.getElementById('negocioInput').value.trim();
-  if (!n) { alert('Poné el nombre'); return; }
+  if (!n) { 
+    Swal.fire({ title: 'Atención', text: 'Ingresá el nombre del negocio.', icon: 'warning' });
+    return; 
+  }
   localStorage.setItem('negocio_nombre', n);
   document.getElementById('paso1').style.display = 'none';
   document.getElementById('paso2').style.display = 'block';
@@ -288,35 +294,56 @@ function guardarNombre() {
   renderPasoPrecios();
 }
 
-// 1. Cambia solo el nombre del empleado del turno actual (Mantiene la sesión de Supabase)
-function cambiarUsuario() { 
-  if (confirm('¿Cerrar turno? Esto NO cierra la caja, solo cambia de vendedor.')) { 
+async function cambiarUsuario() { 
+  const res = await Swal.fire({
+    title: '¿Cerrar turno?',
+    text: 'Esto NO cierra la caja, solo cambia de vendedor.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cambiar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (res.isConfirmed) { 
     localStorage.removeItem('vendedor_nombre'); 
     location.reload(); 
   } 
 }
 
-// 2. Destruye la sesión de Supabase y sale completamente del sistema
 async function cerrarSesion() {
-  if (confirm('¿Seguro que querés cerrar la sesión de la heladería?')) {
+  const res = await Swal.fire({
+    title: '¿Cerrar sesión?',
+    text: 'Saldrás del sistema de la heladería.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, salir',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (res.isConfirmed) {
     try {
-      // Destruye el token activo en el servidor de Supabase
       await supabaseClient.auth.signOut();
     } catch (err) {
       console.error("Error al cerrar sesión:", err);
     } finally {
-      // Limpia todo el almacenamiento local
       localStorage.clear();
       sessionStorage.clear();
-      
-      // Recarga la página para mostrar el login principal
       location.reload();
     }
   }
 }
 
-function cambiarNegocio() { 
-  if (confirm('¿Cambiar nombre del negocio? Se borrarán precios y cierres')) { 
+async function cambiarNegocio() { 
+  const res = await Swal.fire({
+    title: '¿Cambiar negocio?',
+    text: 'Se borrarán precios, cierres y ventas registradas.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cambiar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (res.isConfirmed) { 
     localStorage.removeItem('negocio_nombre'); 
     localStorage.removeItem('vendedor_nombre'); 
     localStorage.removeItem('productos_config'); 
@@ -412,9 +439,12 @@ function cobrar(metodo) {
   renderCarrito(); 
 }
 
-function cerrarTurno() { 
+async function cerrarTurno() { 
   let ventasHoy = window._ventasHoy || []; 
-  if (ventasHoy.length === 0) { alert('No hay ventas en este turno para cerrar'); return; } 
+  if (ventasHoy.length === 0) { 
+    Swal.fire({ title: 'Sin ventas', text: 'No hay ventas registradas en este turno.', icon: 'info' }); 
+    return; 
+  } 
   let bruto = ventasHoy.reduce((a, b) => a + (b.vFinal || b.v), 0); 
   let com = ventasHoy.reduce((a, b) => a + (b.vComision || 0), 0); 
   let neto = bruto - com; 
@@ -425,25 +455,60 @@ function cerrarTurno() {
     porMetodo[m].cant++; 
     porMetodo[m].total += (v.vFinal || v.v); 
   }); 
-  let detalleMetodo = Object.entries(porMetodo).map(([k, v]) => `${k}: ${v.cant} ventas $${v.total.toLocaleString()}`).join('\n'); 
-  if (!confirm(`¿CERRAR TURNO?\n\nVendedor: ${localStorage.getItem('vendedor_nombre')}\nFecha: ${HOY}\nVentas: ${ventasHoy.length}\n\nNETO: $${neto.toLocaleString()}\nBRUTO: $${bruto.toLocaleString()}\nCOMISION PY: $${com.toLocaleString()}\n\n${detalleMetodo}\n\nSe exportará el CSV y HOY quedará en 0. El MES seguirá sumando.`)) return; 
+  let detalleMetodo = Object.entries(porMetodo)
+    .map(([k, v]) => `<div><b>${k}:</b> ${v.cant} ventas ($${v.total.toLocaleString()})</div>`)
+    .join(''); 
+
+  const htmlMsg = `
+    <div style="text-align:left;font-size:13px;line-height:1.5;margin-top:10px">
+      <p><b>Vendedor:</b> ${localStorage.getItem('vendedor_nombre')}</p>
+      <p><b>Fecha:</b> ${HOY} | <b>Ventas:</b> ${ventasHoy.length}</p>
+      <hr style="border:0;border-top:1px solid #333;margin:8px 0">
+      <p><b>NETO:</b> $${neto.toLocaleString()}</p>
+      <p><b>BRUTO:</b> $${bruto.toLocaleString()}</p>
+      <p><b>COMISIÓN PY:</b> $${com.toLocaleString()}</p>
+      <hr style="border:0;border-top:1px solid #333;margin:8px 0">
+      <div style="margin-bottom:8px">${detalleMetodo}</div>
+      <small style="color:var(--muted)">Se exportará el CSV y HOY quedará en 0.</small>
+    </div>
+  `;
+
+  const res = await Swal.fire({
+    title: '¿Cerrar turno?',
+    html: htmlMsg,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cerrar turno',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!res.isConfirmed) return; 
+
   exportarDiario(); 
   let cierres = JSON.parse(localStorage.getItem('cierres') || '[]'); 
   cierres.push({ fecha: HOY, hora: new Date().toLocaleTimeString(), vendedor: localStorage.getItem('vendedor_nombre'), bruto, comision: com, neto, cantidad: ventasHoy.length, porMetodo, ventas: ventasHoy }); 
   localStorage.setItem('cierres', JSON.stringify(cierres)); 
   ventas = ventas.filter(v => v.f !== HOY); 
   guardar(); 
-  alert('✅ Turno cerrado. HOY en 0'); 
+
+  Swal.fire({
+    title: 'Turno cerrado',
+    text: 'Se ha exportado el reporte y el día quedó en $0.',
+    icon: 'success'
+  });
 }
 
-function verCierres() { 
+async function verCierres() { 
   let cierres = JSON.parse(localStorage.getItem('cierres') || '[]'); 
-  if (cierres.length === 0) { alert('No hay cierres guardados'); return; } 
+  if (cierres.length === 0) { 
+    Swal.fire({ title: 'Sin cierres', text: 'No hay cierres guardados aún.', icon: 'info' }); 
+    return; 
+  } 
   const lista = document.getElementById('listaCierres'); 
   lista.innerHTML = ''; 
   cierres.slice().reverse().forEach((c) => { 
     let metodos = Object.entries(c.porMetodo || {}).map(([k, v]) => `${k} $${v.total.toLocaleString()}`).join(' | '); 
-    lista.innerHTML += `<div style="background:#111;border:1px solid #232323;border-radius:12px;padding:12px;margin-top:10px"><div style="display:flex;justify-content:space-between"><b style="color:var(--naranja)">${c.fecha} ${c.hora}</b><small style="opacity:.5">${c.vendedor}</small></div><div style="margin-top:6px;font-size:13px">NETO <b>$${c.neto.toLocaleString()}</b> | Bruto $${c.bruto.toLocaleString()} | Com $${c.comision.toLocaleString()}</div><div style="margin-top:4px;font-size:11px;opacity:.6">${c.cantidad} ventas | ${metodos}</div></div>`; 
+    lista.innerHTML += `<div style="background:#111;border:1px solid #232323;border-radius:12px;padding:12px;margin-top:10px"><div style="display:flex;justify-content:space-between"><b style="color:var(--gold)">${c.fecha} ${c.hora}</b><small style="opacity:.5">${c.vendedor}</small></div><div style="margin-top:6px;font-size:13px">NETO <b>$${c.neto.toLocaleString()}</b> | Bruto $${c.bruto.toLocaleString()} | Com $${c.comision.toLocaleString()}</div><div style="margin-top:4px;font-size:11px;opacity:.6">${c.cantidad} ventas | ${metodos}</div></div>`; 
   }); 
   document.getElementById('modalCierres').classList.add('open'); 
 }
@@ -484,11 +549,15 @@ function render() {
   window._ventasMesActual = ventasMesActual;
 }
 
-function exportarDiario() { 
+// EXPORTACIÓN EXCEL / COMPATIBILIDAD UNIVERSAL
+async function exportarDiario() { 
   let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA'; 
   let nombre = localStorage.getItem('vendedor_nombre'); 
   let ventasHoy = window._ventasHoy || []; 
-  if (ventasHoy.length === 0) { alert('No hay ventas de hoy'); return; } 
+  if (ventasHoy.length === 0) { 
+    Swal.fire({ title: 'Sin ventas', text: 'No hay ventas registradas hoy.', icon: 'info' }); 
+    return; 
+  } 
   let brutoHoy = ventasHoy.reduce((a, b) => a + (b.vFinal || b.v), 0); 
   let comisionHoy = ventasHoy.reduce((a, b) => a + (b.vComision || 0), 0); 
   let netoHoy = brutoHoy - comisionHoy; 
@@ -499,18 +568,20 @@ function exportarDiario() {
     resumen[v.p].m += (v.vFinal || v.v); 
     resumen[v.p].com += (v.vComision || 0); 
   }); 
-  let csv = `${negocio.toUpperCase()} - VENTA DIARIA - TURNO\nVendedor,${nombre}\nFecha,${HOY}\nHora cierre,${new Date().toLocaleTimeString()}\n\nTOTAL NETO,$${netoHoy},BRUTO,$${brutoHoy},COMISION,$${comisionHoy}\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total,Comision\n`; 
-  Object.entries(resumen).forEach(([p, d]) => { csv += `"${p}",${d.c},${d.m},${d.com}\n`; }); 
-  csv += `\nDETALLE\nHora,Producto,Precio Base,Comision,Total,Metodo\n`; 
-  ventasHoy.forEach(v => { csv += `${v.h},"${v.p}",${v.vBase || v.v},${v.vComision || 0},${v.vFinal || v.v},${v.metodo || ''}\n`; }); 
-  let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); 
+
+  let csv = `sep=;\n${negocio.toUpperCase()} - VENTA DIARIA - TURNO\nVendedor;${nombre}\nFecha;${HOY}\nHora cierre;${new Date().toLocaleTimeString()}\n\nTOTAL NETO;$${netoHoy};BRUTO;$${brutoHoy};COMISION;$${comisionHoy}\n\nRESUMEN POR PRODUCTO\nProducto;Cantidad;Total;Comision\n`; 
+  Object.entries(resumen).forEach(([p, d]) => { csv += `"${p}";${d.c};${d.m};${d.com}\n`; }); 
+  csv += `\nDETALLE\nHora;Producto;Precio Base;Comision;Total;Metodo\n`; 
+  ventasHoy.forEach(v => { csv += `${v.h};"${v.p}";${v.vBase || v.v};${v.vComision || 0};${v.vFinal || v.v};${v.metodo || ''}\n`; }); 
+  
+  let blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); 
   let a = document.createElement('a'); 
   a.href = URL.createObjectURL(blob); 
   a.download = `CIERRE-${negocio}-${nombre}-${HOY.replaceAll('/', '-')}-${new Date().toLocaleTimeString().replaceAll(':', '-')}-NETO$${netoHoy}.csv`; 
   a.click(); 
 }
 
-function exportarMes() { 
+async function exportarMes() { 
   let negocio = localStorage.getItem('negocio_nombre') || 'HELADERIA'; 
   let nombre = localStorage.getItem('vendedor_nombre'); 
   let ventasMesActual = window._ventasMesActual || []; 
@@ -521,7 +592,10 @@ function exportarMes() {
   }); 
   let todasVentasMes = [...ventasMesActual]; 
   cierresMes.forEach(c => { todasVentasMes.push(...(c.ventas || [])); }); 
-  if (todasVentasMes.length === 0) { alert('No hay ventas este mes'); return; } 
+  if (todasVentasMes.length === 0) { 
+    Swal.fire({ title: 'Sin datos', text: 'No hay ventas registradas este mes.', icon: 'info' }); 
+    return; 
+  } 
   let brutoMes = todasVentasMes.reduce((a, b) => a + (b.vFinal || b.v), 0); 
   let comMes = todasVentasMes.reduce((a, b) => a + (b.vComision || 0), 0); 
   let netoMes = brutoMes - comMes; 
@@ -532,11 +606,13 @@ function exportarMes() {
     resumen[v.p].c++; 
     resumen[v.p].m += (v.vFinal || v.v); 
   }); 
-  let csv = `${negocio.toUpperCase()} - REPORTE MENSUAL (CON CIERRES)\nVendedor,${nombre}\nPeriodo,Del 1/${m}/${anio} al ${HOY}\nNeto,$${netoMes},Bruto,$${brutoMes},Comision,$${comMes}\nCierres incluidos,${cierresMes.length}\n\nRESUMEN POR PRODUCTO\nProducto,Cantidad,Total\n`; 
-  Object.entries(resumen).forEach(([p, d]) => { csv += `"${p}",${d.c},${d.m}\n`; }); 
-  csv += `\nDETALLE\nFecha,Hora,Producto,Base,Comision,Total,Metodo,Vendedor\n`; 
-  todasVentasMes.forEach(v => csv += `${v.f},${v.h},"${v.p}",${v.vBase || v.v},${v.vComision || 0},${v.vFinal || v.v},${v.metodo || ''},${v.vendedor}\n`); 
-  let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); 
+
+  let csv = `sep=;\n${negocio.toUpperCase()} - REPORTE MENSUAL (CON CIERRES)\nVendedor;${nombre}\nPeriodo;Del 1/${m}/${anio} al ${HOY}\nNeto;$${netoMes};Bruto;$${brutoMes};Comision;$${comMes}\nCierres incluidos;${cierresMes.length}\n\nRESUMEN POR PRODUCTO\nProducto;Cantidad;Total\n`; 
+  Object.entries(resumen).forEach(([p, d]) => { csv += `"${p}";${d.c};${d.m}\n`; }); 
+  csv += `\nDETALLE\nFecha;Hora;Producto;Base;Comision;Total;Metodo;Vendedor\n`; 
+  todasVentasMes.forEach(v => csv += `${v.f};${v.h};"${v.p}";${v.vBase || v.v};${v.vComision || 0};${v.vFinal || v.v};${v.metodo || ''};${v.vendedor}\n`); 
+  
+  let blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); 
   let aEl = document.createElement('a'); 
   aEl.href = URL.createObjectURL(blob); 
   aEl.download = `MES-COMPLETO-${m}-${anio}-${negocio}-NETO$${netoMes}-${HOY.replaceAll('/', '-')}.csv`; 
