@@ -264,6 +264,19 @@
   color: var(--c-text);
 }
 
+/* Contenedor con altura fija/máxima y scroll interno */
+#contenedorLista {
+  display: none;
+  max-height: 240px;      /* Altura máxima antes de que aparezca la barra de desplazamiento */
+  overflow-y: auto;       /* Habilita el scroll vertical */
+  scrollbar-width: thin;  /* Estilo de barra fino para navegadores modernos */
+}
+
+/* Se muestra cuando está abierto */
+#contenedorLista.abierto {
+  display: block;
+}
+
 #lista .venta-item {
   display: flex;
   justify-content: space-between;

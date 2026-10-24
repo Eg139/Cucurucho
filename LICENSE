@@ -1,7 +1,7 @@
 MIT License
 
-Copyright (c) 2026 Tu Heladería - Sistema de Ventas
-Original para CHOCORLATTE, versión genérica libre.
+Copyright (c) 2026 NaluSoft (nalusoft.dev@gmail.com) - Cucurucho POS
+Versión genérica libre y de código abierto.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ---
-AVISO ADICIONAL SOBRE DATOS / DISCLAIMER:
+AVISO ADICIONAL SOBRE DATOS / DISCLAIMER (Ley N° 25.326 - Argentina):
 
-1. El Software guarda las ventas localmente en el navegador del dispositivo
-(localStorage). No realiza copias en la nube ni backup automático.
-2. El autor no se hace responsable por pérdida de datos causada por:
-   - borrado de caché / historial del navegador,
-   - desinstalación de la PWA,
-   - cambio o reseteo de dispositivo,
-   - uso en modo incógnito o sin exportar.
-3. Se recomienda exportar el reporte CSV diario y mensual como respaldo.
-4. El Software se ofrece como herramienta de apoyo, no como sistema contable
-   o fiscal oficial.
+1. El Software guarda las ventas y configuraciones localmente en el navegador del dispositivo
+   mediante almacenamiento local (localStorage). NaluSoft no recopila, procesa ni almacena
+   datos personales ni transaccionales en servidores propios en la nube.
+2. El autor (NaluSoft) no se hace responsable por pérdida de datos causada por:
+   - borrado de caché o historial del navegador,
+   - desinstalación o reseteo de la PWA,
+   - cambio o rotura de dispositivo,
+   - uso en modo incógnito o falta de respaldo preventivo.
+3. Se recomienda estrictamente a los usuarios exportar el reporte CSV diario/mensual como único respaldo.
+4. El Software se ofrece como herramienta de asistencia operativa, no constituyendo un sistema
+   contable, fiscal u homologado de facturación oficial ante AFIP/ARCA.

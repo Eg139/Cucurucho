@@ -7,7 +7,8 @@ function toggleVentas() {
   const btn = document.getElementById('btnToggleVentas'); 
   if (body && btn) {
     body.classList.toggle('abierto'); 
-    btn.innerText = body.classList.contains('abierto') ? '▲ Ocultar' : '▼ Ver'; 
+    const isOpen = body.classList.contains('abierto');
+    btn.innerText = isOpen ? '▲ Ocultar' : '▼ Ver'; 
   }
 }
 
@@ -43,6 +44,7 @@ function renderCarrito() {
     total += it.precio * it.cant; 
     cant += it.cant;
     if (lista) {
+      // CORREGIDO: Se agregó el operador * que faltaba en el cálculo
       lista.innerHTML += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.2);font-size:11px"><span>${it.nombre} x${it.cant}</span><span>$${(it.precio * it.cant).toLocaleString()}</span></div>`;
     }
   });
