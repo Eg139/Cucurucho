@@ -1,122 +1,161 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0c0c0e">
-<title>CUCURUCHO | by NaluSoft</title>
-<!-- SweetAlert2 CSS y JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F4EFEA">
+    <title>CUCURUCHO | by NaluSoft</title>
+    <!-- SweetAlert2 CSS y JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/bienvenida.css">
+    <link rel="stylesheet" href="css/variables-base.css">
+    <link rel="stylesheet" href="css/pos-components.css">
 </head>
 <body>
 
-<!-- MODAL REGISTRO POR INVITACIÓN -->
-<div id="modalRegistroInvite" class="modal">
-  <div class="modal-content" style="max-width: 360px; text-align: center;">
-    <h3 id="modalHeladeriaTitulo" style="color: var(--naranja, #ff9f43); margin-bottom: 6px;">¡Bienvenido!</h3>
-    <p style="font-size: 12px; opacity: 0.8; margin-bottom: 16px;">Creá tu cuenta para gestionar la heladería</p>
-    
-    <input id="inviteEmail" type="email" placeholder="Correo electrónico" style="width: 100%; margin-bottom: 10px;">
-    <input id="invitePass" type="password" placeholder="Contraseña (mín. 6 caracteres)" style="width: 100%; margin-bottom: 14px;">
-    
-    <button id="btnConfirmarRegistro" style="width: 100%; background: var(--naranja, #ff9f43); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; border: none; cursor: pointer;">
-      CREAR CUENTA Y ENTRAR
-    </button>
-    
-    <p id="msgInvite" style="font-size: 11px; color: #ff6b6b; margin-top: 10px; min-height: 14px;"></p>
-  </div>
-</div>
-<div id="bienvenida">
-  <div class="logo">🍦</div>
-  <h1 id="tituloBienvenida">CUCURUCHO</h1>
-  <div class="linea"></div>
-  <div id="subBienvenida">by NaluSoft</div>
+    <!-- PANTALLA DE CONFIGURACIÓN / BIENVENIDA -->
+    <main id="bienvenida">
+        <div class="logo">🍦</div>
+        <h1 id="tituloBienvenida">CUCURUCHO</h1>
+        <div class="linea"></div>
+        <div id="subBienvenida">by NaluSoft</div>
 
-  <!-- Paso 1: Negocio -->
-  <div id="paso1" class="paso-card">
-    <p class="paso-label">¿Cómo se llama tu negocio?</p>
-    <input id="negocioInput" placeholder="Ej: Heladeria Eric">
-    <button onclick="guardarNegocio()">SIGUIENTE →</button>
-  </div>
+        <!-- Paso 1: Negocio -->
+        <div id="paso1" class="paso-card">
+            <p class="paso-label">¿Cómo se llama tu negocio?</p>
+            <input id="negocioInput" name="negocio" placeholder="Ej: Heladería Artesanal" autocomplete="organization" autofocus>
+            <button onclick="guardarNegocio()">SIGUIENTE →</button>
+        </div>
 
-  <!-- Paso 2: Vendedor -->
-  <div id="paso2" class="paso-card" style="display:none">
-    <p class="paso-label">Tu nombre</p>
-    <input id="nombreInput" placeholder="Ej: Eric">
-    <button onclick="guardarNombre()">ENTRAR</button>
-  </div>
+        <!-- Paso 2: Vendedor -->
+        <div id="paso2" class="paso-card" style="display:none">
+            <p class="paso-label">Tu nombre</p>
+            <input id="nombreInput" name="vendedor" placeholder="Ej: Eric" autocomplete="given-name" autofocus>
+            <button onclick="guardarNombre()">SIGUIENTE →</button>
+        </div>
 
-  <!-- Paso 3: Precios / Login (se pisa dinámicamente) -->
-  <div id="paso3" class="paso-card" style="display:none">
-    <p class="paso-label">Precios</p>
-    <div id="listaPreciosConfig"></div>
-    <button onclick="guardarPrecios()">GUARDAR Y ENTRAR</button>
-  </div>
-</div>
+        <!-- Paso 3: Configurar Productos (Máximo 10) -->
+        <div id="paso3" class="paso-card" style="display:none">
+            <p class="paso-label">Crea tus productos (Máx. 10)</p>
+            <div style="font-size: 11px; color: var(--c-muted); margin-bottom: 12px;">
+                Agregá al menos un producto para empezar a vender en tu mostrador.
+            </div>
+            
+            <!-- Contenedor dinámico controlado por ui.js -->
+            <div id="listaPreciosConfig"></div>
+            
+            <button onclick="guardarPrecios()">GUARDAR Y ENTRAR</button>
+        </div>
+    </main>
 
-<div id="app" style="display:none">
-  <div class="topbar">
-    <div>
-      <div class="brand-sub" id="brandTop">CUCURUCHO</div>
-      <div style="font-size:9px;color:#e9c891;letter-spacing:1px">by NaluSoft</div>
-      <div id="saludo" style="font-size:11px;color:#8a8278">• Turno</div>
+    <!-- APLICACIÓN PRINCIPAL (POS MOSTRADOR) -->
+    <div id="app" style="display:none">
+        <header class="topbar">
+            <div>
+                <div class="brand-sub" id="brandTop">CUCURUCHO</div>
+                <div style="font-size:9px;color:var(--c-muted);letter-spacing:1px">by NaluSoft</div>
+                <div id="saludo" style="font-size:11px;color:var(--c-muted);font-weight:600">Turno</div>
+            </div>
+            <button class="btn-salir" onclick="cambiarUsuario()">CAMBIAR VENDEDOR</button>
+        </header>
+
+        <section class="card-ventas">
+            <div class="ventas-head">✨ Ventas hoy</div>
+            <div class="ventas-grid">
+                <div><small>↗ Ingresos</small><b id="totalHoy">$0</b></div>
+                <div><small>🗒 Pedidos</small><b id="cantHoy">0</b></div>
+                <div><small>↗ Promedio</small><b id="promHoy">$0 <span>+12%</span></b></div>
+            </div>
+        </section>
+
+        <section>
+            <div class="prod-head">
+                <h2>Productos</h2>
+                <span onclick="editarPrecios()">Editar catálogo +</span>
+            </div>
+            <div id="botones"></div>
+        </section>
+
+        <div style="text-align:center;font-size:10px;color:var(--c-muted);margin:14px 0;font-weight:600">Powered by NaluSoft</div>
+
+        <section class="gestion-box">
+            <button class="btn-cerrar" onclick="cerrarTurno()">🔒 CERRAR TURNO - EXPORTAR EXCEL</button>
+            <button class="btn-ghost" onclick="verCierres()">📋 Historial</button>
+            <button class="btn-ghost" onclick="exportarDiario()">📊 Exportar día</button>
+            <button class="btn-ghost" onclick="exportarMes()" style="grid-column:1 / -1">📈 Exportar TODO el mes</button>
+        </section>
+
+        <section class="detalle-ventas">
+            <div class="detalle-head" onclick="toggleVentas()">
+                <b id="tituloVentas">VENTAS DEL DÍA (0)</b>
+                <span id="btnToggleVentas">▼ Ver</span>
+            </div>
+            <div id="contenedorLista">
+                <div id="lista"></div>
+            </div>
+        </section>
+
+        <!-- BARRA FLOTANTE DE CARRITO -->
+        <div id="carrito-bar" style="display:none">
+            <div class="carrito-inner">
+                <div style="display:flex;gap:10px;align-items:center">
+                    <div class="bag">👜</div>
+                    <div>
+                        <small id="carritoCount">0 items</small>
+                        <b id="carritoTotalBar">$0</b>
+                    </div>
+                </div>
+                <button class="btn-pagar" onclick="abrirPagar()">Pagar <span>›</span></button>
+            </div>
+            <div id="carritoLista" style="display:none"></div>
+            <div id="previewPY" style="display:none"></div>
+        </div>
     </div>
-    <!-- Cambiar de turno/empleado -->
-<button class="btn-salir" onclick="cambiarUsuario()">CAMBIAR VENDEDOR</button>
 
-<!-- Cerrar sesión de la heladería en Supabase -->
-<button class="btn-salir" onclick="cerrarSesion()">CERRAR SESIÓN</button>
-  </div>
-
-  <div class="card-ventas">
-    <div class="ventas-head">✨ Ventas hoy</div>
-    <div class="ventas-grid">
-      <div><small>↗ Ingresos</small><b id="totalHoy">$0</b></div>
-      <div><small>🗒 Pedidos</small><b id="cantHoy">0</b></div>
-      <div><small>↗ Promedio</small><b id="promHoy">$0 <span>+12%</span></b></div>
+    <!-- MODAL DE PAGOS -->
+    <div id="modalPagar" class="modal">
+        <div class="modal-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                <b style="font-size:15px;font-family:'Instrument Serif',serif">Elegí método de pago</b>
+                <button onclick="cerrarPagar()" style="background:var(--c-bg);color:var(--c-text);padding:6px 12px;border:1px solid var(--c-border);border-radius:8px;font-weight:700;cursor:pointer">✕</button>
+            </div>
+            <div class="pay-grid">
+                <button class="pay-btn pay-ef" onclick="cobrar('EFECTIVO');cerrarPagar()">EFECTIVO</button>
+                <button class="pay-btn pay-mp" onclick="cobrar('MP');cerrarPagar()">MERCADO PAGO</button>
+                <button class="pay-btn pay-tr" onclick="cobrar('TRANSFER');cerrarPagar()">TRANSFERENCIA</button>
+                <button class="pay-btn pay-py" onclick="cobrar('PEDIDOSYA');cerrarPagar()">PEDIDOS YA (+35%)</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="prod-head"><h2>Productos</h2><span onclick="editarPrecios()">Agregar personalizado +</span></div>
-  <div id="botones"></div>
-  <div style="text-align:center;font-size:10px;color:#555;margin:12px 0">Powered by NaluSoft</div>
-
-  <div class="gestion-box">
-    <button class="btn-cerrar" onclick="cerrarTurno()">🔒 CERRAR TURNO - EXPORTAR EXCEL</button>
-    <button class="btn-ghost" onclick="verCierres()">📋 Historial</button>
-    <button class="btn-ghost" onclick="exportarDiario()">📊 Exportar día</button>
-    <button class="btn-ghost" onclick="exportarMes()" style="grid-column:1 / -1">📈 Exportar TODO el mes</button>
-  </div>
-
-  <div class="detalle-ventas">
-    <div class="detalle-head" onclick="toggleVentas()"><b id="tituloVentas">VENTAS DEL DÍA (0)</b><span id="btnToggleVentas">▼ Ver</span></div>
-    <div id="contenedorLista"><div id="lista"></div></div>
-  </div>
-
-  <div id="carrito-bar" style="display:none">
-    <div class="carrito-inner">
-      <div style="display:flex;gap:10px;align-items:center"><div class="bag">👜</div><div><small id="carritoCount">0 items</small><b id="carritoTotalBar">$0</b></div></div>
-      <button class="btn-pagar" onclick="abrirPagar()">Pagar <span>›</span></button>
+    <!-- MODAL DE HISTORIAL DE CIERRES -->
+    <div id="modalCierres" class="modal" onclick="if(event.target===this) cerrarModal()">
+        <div class="modal-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <b style="font-size:16px;font-family:'Instrument Serif',serif">HISTORIAL DE CIERRES</b>
+                <button onclick="cerrarModal()" style="background:var(--c-bg);color:var(--c-text);padding:6px 12px;border:1px solid var(--c-border);border-radius:8px;font-weight:700;cursor:pointer">✕</button>
+            </div>
+            <div id="listaCierres"></div>
+        </div>
     </div>
-    <div id="carritoLista" style="display:none"></div>
-    <div id="previewPY" style="display:none"></div>
-  </div>
-</div>
 
-<div id="modalPagar" class="modal"><div class="modal-box">
-  <div style="display:flex;justify-content:space-between;margin-bottom:12px"><b style="font-size:13px">Elegí método</b><button onclick="cerrarPagar()" style="width:auto;background:#222;color:#fff;padding:4px 10px;border:0;border-radius:6px">X</button></div>
-  <div class="pay-grid">
-    <button class="pay-btn pay-ef" onclick="cobrar('EFECTIVO');cerrarPagar()">● EFECTIVO</button>
-    <button class="pay-btn pay-mp" onclick="cobrar('MP');cerrarPagar()">● MP</button>
-    <button class="pay-btn pay-tr" onclick="cobrar('TRANSFER');cerrarPagar()">TRANSFER</button>
-    <button class="pay-btn pay-py" onclick="cobrar('PEDIDOSYA');cerrarPagar()">● PEDIDOS YA +35%</button>
-  </div>
-</div></div>
-<div id="modalCierres" class="modal" onclick="if(event.target===this) cerrarModal()"><div class="modal-box"><b>CIERRES</b><div id="listaCierres"></div></div></div>
-
-<script src="script.js"></script>
+<!-- SCRIPTS MODULARIZADOS -->
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/onboarding.js"></script>
+    <script src="js/sales.js"></script>
+    <script src="js/reports.js"></script>
+    <script>
+        // Registro del Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+                    .catch(err => console.log('Error al registrar el Service Worker:', err));
+            });
+        }
+        // Inicialización de la aplicación
+        initOnboarding();
+    </script>
 </body>
 </html>

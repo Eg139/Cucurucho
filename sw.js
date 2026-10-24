@@ -1,9 +1,14 @@
-const CACHE = 'cucurucho-v9'; // <--- Subimos de versión para forzar la limpieza
+const CACHE = 'cucurucho-v1.4'; // Subimos de versión
+
 const FILES = [
   './',
   './index.html',
-  './style.css',
-  './script.js',
+  './css/bienvenida.css',
+  './css/variables-base.css',
+  './css/pos-components.css',
+  './js/config.js',
+  './js/storage.js',
+  './js/ui.js',
   './manifest.json',
   './nalusoft.png'
 ];
@@ -25,13 +30,12 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // 1. IGNORAR PETICIONES DE SUPABASE / API (NUNCA CACHEAR REST NI RPC)
-  if (e.request.url.includes('supabase.co')) {
-    return; // Pasa directo a la red sin intervenir
-  }
-
-  // 2. HTML, JS y CSS siempre a la red primero
-  if (e.request.url.includes('script.js') || e.request.url.includes('index.html') || e.request.url.includes('style.css')) {
+  // 1. HTML, JS y CSS siempre a la red primero con política no-store para evitar retardos
+  if (
+    e.request.url.includes('index.html') || 
+    e.request.url.includes('.css') || 
+    e.request.url.includes('/js/')
+  ) {
     e.respondWith(
       fetch(e.request, { cache: 'no-store' }).then(r => {
         if (r.status === 200) {
@@ -42,7 +46,7 @@ self.addEventListener('fetch', e => {
       }).catch(() => caches.match(e.request))
     );
   } else {
-    // 3. Demás recursos estáticos (imágenes, fuentes)
+    // 2. Demás recursos estáticos (imágenes, fuentes, etc.)
     e.respondWith(
       caches.match(e.request).then(r => r || fetch(e.request))
     );

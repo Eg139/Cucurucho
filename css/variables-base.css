@@ -1,0 +1,97 @@
+/* ======================================================
+   CUCURUCHO POS - VARIABLES, RESET Y ESTILOS BASE
+   ====================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  /* Paleta NáluSoft / Cucurucho (Ergonomía & Salud Visual) */
+  --c-bg: #F4EFEA;            /* Fondo neutro que reduce fatiga visual */
+  --c-card: #FFFFFF;          /* Tarjeta blanca con elevado contraste */
+  --c-text: #2C1A11;          /* Texto principal (Marrón profundo) */
+  --c-muted: #7A6354;         /* Texto secundario / leyendas */
+  --c-border: #E2D7CD;        /* Bordes estructurales visibles */
+  --c-border-hover: #B8A392;
+  
+  /* Colores de Acento y Estado */
+  --c-brand: #6E473B;         /* Color de marca para precios y títulos */
+  --c-accent-btn: #3D2314;    /* Botón de acción principal */
+  --c-green-neto: #15803D;    /* Indicador numérico positivo */
+  --c-input-bg: #EAE3DA;
+  
+  /* Elevación y Sombras Suaves */
+  --shadow-card: 0 2px 8px rgba(44, 26, 17, 0.05);
+  --shadow-active: 0 4px 16px rgba(44, 26, 17, 0.10);
+  --shadow-modal: 0 20px 40px rgba(44, 26, 17, 0.25);
+}
+
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  max-width: 440px; /* Ancho ideal en mobile / tablet portrait */
+  margin: 0 auto;
+  padding: 0 16px 130px;
+  user-select: none;
+}
+
+/* INPUTS Y TEXTAREAS GENERALES */
+input, textarea {
+  width: 100%;
+  background: var(--c-input-bg);
+  border: 1.5px solid var(--c-border);
+  border-radius: 12px;
+  padding: 14px;
+  color: var(--c-text);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--c-brand);
+  background: #FFF;
+  box-shadow: 0 0 0 3px rgba(110, 71, 59, 0.15);
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0 14px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.brand-sub {
+  font-family: 'Instrument Serif', serif;
+  letter-spacing: 1px;
+  color: var(--c-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.btn-salir {
+  background: transparent;
+  border: 1.5px solid var(--c-border);
+  color: var(--c-muted);
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-salir:active {
+  background: var(--c-border);
+  color: var(--c-text);
+}
